@@ -102,9 +102,15 @@ public class PolyvalentServer implements DedicatedServerModInitializer {
             return null;
         });
 
+        int number = -1;
+
         // Create a map to all the state ids
         for (BlockState state : Block.STATE_IDS) {
             Block block = state.getBlock();
+
+            number++;
+
+            System.out.println("[Polyvalent] State: " +  number + "  »»  " + state);
 
             if (block instanceof PolyvalentBlock) {
                 String state_name = state.toString();
