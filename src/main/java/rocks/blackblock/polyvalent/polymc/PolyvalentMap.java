@@ -58,19 +58,14 @@ public class PolyvalentMap extends PolyMapImpl {
         int state_id = Block.STATE_IDS.getRawId(clientState);
 
         // Don't lookup vanilla ids
-        if (state_id < 20339) {
+        if (state_id < 20342) {
             return state_id;
         }
-
-        System.out.println("Getting client state raw id for " + state);
-        System.out.println(" -- Server-side state_id is currently: " + state_id);
 
         // If the state is different on the client, we need to use that id
         if (server_to_client_ids.containsKey(state_id)) {
             state_id = server_to_client_ids.get(state_id);
         }
-
-        System.out.println(" -- Client-size state_id is now: " + state_id);
 
         return state_id;
     }

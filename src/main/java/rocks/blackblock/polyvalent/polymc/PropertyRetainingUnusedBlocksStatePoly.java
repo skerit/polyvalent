@@ -139,15 +139,11 @@ public class PropertyRetainingUnusedBlocksStatePoly implements BlockPoly {
     public BlockState getClientBlock(BlockState input) {
         BlockState result = states.get(filter.apply(input));
 
-        System.out.println("getClientBlock: " + input + " -> " + result);
-
         if (result != null && this.properties != null) {
             for (Property<?> p : this.properties) {
                 result = copyProperty(result, input, p);
             }
         }
-
-        System.out.println("[PropertyRetainingUnusedBlocksStatePoly] getClientBlock: " + result);
 
         return result;
     }

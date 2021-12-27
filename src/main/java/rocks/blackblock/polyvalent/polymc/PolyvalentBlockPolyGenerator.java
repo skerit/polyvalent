@@ -70,8 +70,6 @@ public class PolyvalentBlockPolyGenerator {
             PolyMc.LOGGER.warn("Failed to get material for " + block.getTranslationKey());
         }
 
-        System.out.println("  Collision shape: " + collisionShape);
-
         //=== FULL BLOCKS ===
         if (Block.isShapeFullCube(collisionShape)) {
 

@@ -88,14 +88,9 @@ public class PolyvalentServer implements DedicatedServerModInitializer {
         PolyvalentCommands.registerCommands();
 
         PolyMapProvider.EVENT.register(player -> {
-            System.out.println("Checking if player has PolyValent!");
-
             TempPlayerLoginAttachments player_login = (TempPlayerLoginAttachments) player;
 
-            System.out.println("Has PolyValent: " + player_login.hasPolyvalent());
-
             if (player_login.hasPolyvalent()) {
-                System.out.println(" -- Yes, sending poly map!");
                 return player_login.getPolyvalentMap();
             }
 
@@ -110,7 +105,7 @@ public class PolyvalentServer implements DedicatedServerModInitializer {
 
             number++;
 
-            System.out.println("[Polyvalent] State: " +  number + "  »»  " + state);
+            //System.out.println("[Polyvalent] State: " +  number + "  »»  " + state);
 
             if (block instanceof PolyvalentBlock) {
                 String state_name = state.toString();

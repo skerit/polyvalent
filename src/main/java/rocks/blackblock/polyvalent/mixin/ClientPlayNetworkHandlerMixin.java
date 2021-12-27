@@ -44,12 +44,10 @@ public abstract class ClientPlayNetworkHandlerMixin {
 
     @Inject(method = "onKeepAlive", at = @At("HEAD"))
     private void polymer_handleHackfest(KeepAliveS2CPacket packet, CallbackInfo ci) {
-        System.out.println("[Polyvalent] Received keepalive packet from server: " + packet.getId());
-        // Yes, it's a hack but it works quite well!
-        // I should replace it with some api later
+        // When the server sends our special keep-alive packet, we know that the server is a Polyvalent server,
+        // and we can now send our handshake packet.
         if (packet.getId() == PolyvalentHandshakeHandlerLogin.MAGIC_VALUE) {
             PolyvalentClientProtocol.sendHandshake((ClientPlayNetworkHandler) (Object) this);
         }
     }
-
 }

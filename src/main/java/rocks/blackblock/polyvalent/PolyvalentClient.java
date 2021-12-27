@@ -18,11 +18,7 @@ public class PolyvalentClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ClientPlayNetworking.registerGlobalReceiver(Polyvalent.CHANNEL_ID, (client, handler, packet, sender) -> {
-            System.out.println("Received packet from server: " + packet.toString());
-
             int number = packet.readInt();
-
-            System.out.println("Number: " + number);
         });
 
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getTranslucent(),
@@ -59,8 +55,6 @@ public class PolyvalentClient implements ClientModInitializer {
             // Get the client-side raw id
             int raw_id = Block.STATE_IDS.getRawId(state);
 
-            System.out.println("State: " + state.toString() + " has raw client id " + raw_id);
-
             Block block = state.getBlock();
             Identifier id = Registry.BLOCK.getId(block);
             String name = id.toString();
@@ -78,17 +72,6 @@ public class PolyvalentClient implements ClientModInitializer {
             }
 
             block_state_start.put(name, start_id);
-
-            /*
-            String state_id = state.toString();
-            int raw_id = Block.STATE_IDS.getRawId(state);
-
-            buffer.writeVarInt(raw_id);
-            buffer.writeString(state_id);
-
-            System.out.println("Writing " + state_id + " with raw id " + raw_id);
-
-             */
         }
 
         for (String name : block_state_count.keySet()) {
