@@ -29,8 +29,6 @@ public class PolyvalentGenerator {
                 .filter(entry -> !entry.getKey().getValue().getNamespace().equals("polyvalent"))
                 .sorted(Comparator.comparing(a -> a.getKey().getValue()))  // Compares the identifier
                 .forEach(entry -> {
-                    System.out.println("-- Entry: " + entry);
-                    System.out.println("Testing " + entry.getKey().getValue() + " - " + entry);
                     generator.accept(entry.getValue(), builder);
                 });
     }

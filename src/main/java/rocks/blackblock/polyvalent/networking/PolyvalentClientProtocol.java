@@ -45,14 +45,6 @@ public class PolyvalentClientProtocol {
         }
     }
 
-    public static void sendBlockIds(ClientPlayNetworkHandler handler) {
-        PacketByteBuf buf = Polyvalent.buf(0);
-
-
-
-
-    }
-
     /*
     public static void sendSyncRequest(ClientPlayNetworkHandler handler) {
         if (InternalClientRegistry.enabled) {

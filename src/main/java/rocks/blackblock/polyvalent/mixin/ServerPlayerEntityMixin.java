@@ -97,6 +97,82 @@ public class ServerPlayerEntityMixin implements TempPlayerLoginAttachments {
 
     private void _loadPolyvalentStates(int amount, PacketByteBuf buffer) {
 
+        System.out.println("Loading " + amount + " polyvalent states");
+
+        int added = 0;
+
+        PolyvalentMap map = this.getPolyvalentMap();
+
+        while (added < amount) {
+            String block_id = buffer.readString(1024);
+            int amount_of_states = buffer.readVarInt();
+            int start_id = buffer.readVarInt();
+            int nonce_nr = -1;
+
+            for (int i = 0; i < amount_of_states; i++) {
+                int client_raw_id = start_id + i;
+                String client_name = "Block{" + block_id + "}";
+                nonce_nr++;
+
+                if (client_name.equals("Block{polyvalent:slab}")) {
+                    String nonce_name = client_name + "[nonce=" + nonce_nr + ",";
+                    String type_name;
+
+                    // Decrease the loop counter by one, we'll increase it again later
+                    i--;
+
+                    for (int type_count = 0; type_count < 3; type_count++) {
+                        if (type_count == 0) {
+                            type_name = nonce_name + "type=top,";
+                        } else if (type_count == 1) {
+                            type_name = nonce_name + "type=bottom,";
+                        } else {
+                            type_name = nonce_name + "type=double,";
+                        }
+
+                        for (int water_count = 0; water_count < 2; water_count++) {
+                            String water_name;
+
+                            if (water_count == 0) {
+                                water_name = type_name + "waterlogged=true]";
+                            } else {
+                                water_name = type_name + "waterlogged=false]";
+                            }
+
+                            // And now get the raw id from the server
+                            int server_raw_id = PolyvalentServer.BLOCK_STATE_ID_MAP.get(water_name);
+
+                            if (client_raw_id != server_raw_id) {
+                                map.setServerToClientId(server_raw_id, client_raw_id);
+                            }
+
+                            client_raw_id++;
+
+                            i++;
+                        }
+                    }
+                } else {
+
+                    client_name = client_name + "[nonce=" + i + "]";
+
+                    // And now get the raw id from the server
+                    int server_raw_id = PolyvalentServer.BLOCK_STATE_ID_MAP.get(client_name);
+
+                    if (client_raw_id != server_raw_id) {
+                        map.setServerToClientId(server_raw_id, client_raw_id);
+                    }
+                }
+            }
+
+            added += amount_of_states;
+        }
+
+        System.out.println("Finished loading " + added + " polyvalent states");
+
+    }
+
+    private void old_loadPolyvalentStates(int amount, PacketByteBuf buffer) {
+
         int i = 0;
 
         System.out.println("Loading " + amount + " polyvalent states");

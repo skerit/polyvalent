@@ -16,6 +16,8 @@ import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import rocks.blackblock.polyvalent.block.PolyFullBlock;
+import rocks.blackblock.polyvalent.block.PolySlabBlock;
+import rocks.blackblock.polyvalent.block.PolyTransparentBlock;
 import rocks.blackblock.polyvalent.block.PolyvalentBlock;
 import rocks.blackblock.polyvalent.item.PolyArmorItem;
 
@@ -42,6 +44,8 @@ public class Polyvalent implements ModInitializer {
 	public static final PolyFullBlock WOOD_BLOCK = PolyvalentBlock.createMaterialBlock("wood", Material.WOOD);
 	public static final PolyFullBlock STONE_BLOCK = PolyvalentBlock.createMaterialBlock("stone", Material.STONE);
 	public static final PolyFullBlock GLOW_BLOCK = PolyvalentBlock.createGlowBlock("glow", Material.STONE);
+	public static final PolyTransparentBlock GLASS_BLOCK = PolyvalentBlock.createTransparentBlock("glass", Material.GLASS);
+	public static final PolySlabBlock SLAB_BLOCK = PolyvalentBlock.createSlabBlock("slab", Material.STONE);
 
 	public static PacketByteBuf buf(int version) {
 		var buf = new PacketByteBuf(Unpooled.buffer());
