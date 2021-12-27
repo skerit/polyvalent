@@ -1,0 +1,20 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "rocks.blackblock.polyvalent.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+    "CustomPayloadS2CPacketAccessor"
+  ],
+  "client": [
+    "ClientPlayNetworkHandlerMixin"
+  ],
+  "server": [
+    "ServerLoginNetworkHandlerMixin",
+    "ServerPlayerEntityMixin",
+    "ServerStartMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

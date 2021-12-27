@@ -1,9 +1,25 @@
-# Fabric Example Mod
+<h1 align="center">
+  <b>Polyvalent</b>
+</h1>
+<div align="center">
+  👷🏼 Client-side Minecraft Fabric companion mod for PolyMC
+</div>
+<div align="center">
+  <sub>
+    Coded with ❤️ by <a href="#authors">Jelle De Loecker</a>.
+  </sub>
+</div>
 
-## Setup
+## Introduction
 
-For setup instructions please see the [fabric wiki page](https://fabricmc.net/wiki/tutorial:setup) that relates to the IDE that you are using.
+This mod is a client-side companion for PolyMC. PolyMC allows servers to install mods, without the players requiring to install the same mods on their client.
+(This works by using CustomModelData for items & unused block states for blocks, together with resource packs)
 
-## License
+Polyvalent improves on that experience by making more things overridable through resource packs.
 
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+So the main idea is: your players only have to install 1 mod instead of a hundred.
+
+## Authors
+- **Jelle De Loecker** -  *Follow* me on *Github* ([:octocat:@skerit](https://github.com/skerit)) and on  *Twitter* ([🐦@skeriten](http://twitter.com/intent/user?screen_name=skeriten))
+
+See also the list of [contributors](https://github.com/skerit/polyvalent/contributors) who participated in this project.
