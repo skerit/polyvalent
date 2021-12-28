@@ -16,6 +16,8 @@ public class ServerPackets {
     public static final Identifier HANDSHAKE_ID = Polyvalent.id(HANDSHAKE);
     public static final String RAW_ID_SYNC = "raw_id_sync";
     public static final Identifier RAW_ID_SYNC_ID = Polyvalent.id(RAW_ID_SYNC);
+    public static final String BLOCK_ID_MAP = "block_id_map";
+    public static final Identifier BLOCK_ID_MAP_ID = Polyvalent.id(BLOCK_ID_MAP);
 
     public static final int getBestSupported(String identifier, int[] ver) {
 
@@ -39,5 +41,6 @@ public class ServerPackets {
     static {
         register(HANDSHAKE, 0);
         register(RAW_ID_SYNC, 0);
+        register(BLOCK_ID_MAP, 0);
     }
 }

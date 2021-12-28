@@ -1,5 +1,6 @@
 package rocks.blackblock.polyvalent.networking;
 
+import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -12,6 +13,7 @@ import net.minecraft.command.argument.BlockArgumentParser;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -20,6 +22,8 @@ import net.minecraft.world.chunk.ChunkStatus;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.polyvalent.Polyvalent;
+import rocks.blackblock.polyvalent.PolyvalentClient;
+import rocks.blackblock.polyvalent.client.InternalClientRegistry;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,6 +73,7 @@ public class PolyvalentClientProtocolHandler {
     private static boolean handle(ClientPlayNetworkHandler handler, String packet, int version, PacketByteBuf buf) {
         return switch (packet) {
             case ServerPackets.HANDSHAKE -> handleHandshake(handler, version, buf);
+            case ServerPackets.BLOCK_ID_MAP -> handleBlockIdMap(handler, version, buf);
 
             default -> {
                 var packetHandler = CUSTOM_PACKETS.get(packet);
@@ -79,6 +84,29 @@ public class PolyvalentClientProtocolHandler {
                 yield false;
             }
         };
+    }
+
+    public static boolean handleBlockIdMap(ClientPlayNetworkHandler handler, int version, PacketByteBuf buf) {
+
+        // Remove all the old identifiers
+        PolyvalentClient.actualBlockIdentifiers.clear();
+
+        int block_count = buf.readVarInt();
+        int byte_size = buf.readVarInt();
+
+        for (int i = 0; i < block_count; i++) {
+            String block_name = buf.readString(1024);
+            int state_count = buf.readVarInt();
+
+            Identifier block_id = new Identifier(block_name);
+
+            for (int j = 0; j < state_count; j++) {
+                int state_id = buf.readVarInt();
+                PolyvalentClient.actualBlockIdentifiers.put(state_id, block_id);
+            }
+        }
+
+        return true;
     }
 
     private static boolean run(Runnable runnable) {
@@ -92,7 +120,7 @@ public class PolyvalentClientProtocolHandler {
 
             System.out.println("Server version: " + server_version);
 
-            //InternalClientRegistry.setVersion(buf.readString(64));
+            InternalClientRegistry.setVersion(server_version);
 
             // Get the amount of entries in the registry
             int size = buf.readVarInt();
@@ -107,7 +135,7 @@ public class PolyvalentClientProtocolHandler {
                     list.add(buf.readVarInt());
                 }
 
-                //InternalClientRegistry.CLIENT_PROTOCOL.put(id, ClientPackets.getBestSupported(id, list.elements()));
+                InternalClientRegistry.registerClientProtocol(id, list.elements());
             }
 
             /*

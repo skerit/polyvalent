@@ -29,6 +29,7 @@ public abstract class ClientPlayNetworkHandlerMixin {
 
     @Inject(method = "onGameJoin", at = @At("TAIL"))
     private void polyvalent_sendHandshake(GameJoinS2CPacket packet, CallbackInfo ci) {
+        // Send a handshake packet to the server
         PolyvalentClientProtocol.sendHandshake((ClientPlayNetworkHandler) (Object) this);
     }
 
@@ -43,7 +44,7 @@ public abstract class ClientPlayNetworkHandlerMixin {
     }
 
     @Inject(method = "onKeepAlive", at = @At("HEAD"))
-    private void polymer_handleHackfest(KeepAliveS2CPacket packet, CallbackInfo ci) {
+    private void polyvalent_handleHackfest(KeepAliveS2CPacket packet, CallbackInfo ci) {
         // When the server sends our special keep-alive packet, we know that the server is a Polyvalent server,
         // and we can now send our handshake packet.
         if (packet.getId() == PolyvalentHandshakeHandlerLogin.MAGIC_VALUE) {

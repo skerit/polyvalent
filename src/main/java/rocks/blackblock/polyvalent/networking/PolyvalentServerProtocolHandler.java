@@ -3,11 +3,36 @@ package rocks.blackblock.polyvalent.networking;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.ApiStatus;
+import rocks.blackblock.polyvalent.Polyvalent;
+import rocks.blackblock.polyvalent.PolyvalentServer;
+
+import java.util.HashMap;
 
 @ApiStatus.Internal
 public class PolyvalentServerProtocolHandler {
+
+    public static void handle(ServerPlayNetworkHandler handler, Identifier identifier, PacketByteBuf buf) {
+        int version = -1;
+
+        try {
+            version = buf.readVarInt();
+            handle(handler, identifier.getPath(), version, buf);
+        } catch (Exception e) {
+            Polyvalent.LOGGER.error(String.format("Invalid %s (%s) packet received from client %s (%s)!", identifier, version, handler.getPlayer().getName().getString(), handler.getPlayer().getUuidAsString()));
+            Polyvalent.LOGGER.error(e);
+        }
+    }
+
+
+    private static void handle(ServerPlayNetworkHandler handler, String packet, int version, PacketByteBuf buf) {
+        switch (packet) {
+            case ClientPackets.HANDSHAKE -> handleHandshake(PolyvalentHandshakeHandler.of(handler), version, buf);
+        }
+    }
 
     public static void handleHandshake(PolyvalentHandshakeHandler handler, int version, PacketByteBuf buf) {
         System.out.println("Version: " + version + " - Polyvalent? " + handler.isPolyvalent());

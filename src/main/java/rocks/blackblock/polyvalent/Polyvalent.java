@@ -20,6 +20,8 @@ import rocks.blackblock.polyvalent.item.PolyArmorItem;
 
 public class Polyvalent implements ModInitializer {
 
+	public static final String MC_NAMESPACE = "minecraft";
+
 	public static final boolean DETECTED_POLYMC = FabricLoader.getInstance().isModLoaded("polymc");
 
 	private static final ModContainer CONTAINER = FabricLoader.getInstance().getModContainer("polyvalent").get();
@@ -119,13 +121,41 @@ public class Polyvalent implements ModInitializer {
 	 */
 	public static BlockStateProfile createBlockStateProfile(String name, Block block) {
 
-		System.out.println("Create blockstateprofile for " + name + " - " + block);
-		System.out.println("PolyMC detected: " + DETECTED_POLYMC);
-
 		if (DETECTED_POLYMC) {
 			return BlockStateProfile.getProfileWithDefaultFilter(name, block);
 		}
 
 		return null;
+	}
+
+	/**
+	 * Returns true if this identifier requires a poly implementation
+	 */
+	public static boolean requiresPoly(Identifier id) {
+		if (id == null) return false;
+
+		String namespace = id.getNamespace();
+
+		if (isNamespaceVanilla(namespace)) {
+			return false;
+		}
+
+		return !namespace.equals(MOD_ID);
+	}
+
+
+	/**
+	 * Returns true if this identifier is in the minecraft namespace
+	 */
+	public static boolean isVanilla(Identifier id) {
+		if (id == null) return false;
+		return isNamespaceVanilla(id.getNamespace());
+	}
+
+	/**
+	 * Returns true if this namespace is minecraft
+	 */
+	public static boolean isNamespaceVanilla(String v) {
+		return v.equals(MC_NAMESPACE);
 	}
 }

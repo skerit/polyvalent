@@ -17,6 +17,10 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class PolyvalentClient implements ClientModInitializer {
+
+    public static HashMap<Integer, Identifier> actualBlockIdentifiers = new HashMap<>();
+    public static HashMap<Integer, Identifier> actualItemIdentifiers = new HashMap<>();
+
     @Override
     public void onInitializeClient() {
         ClientPlayNetworking.registerGlobalReceiver(Polyvalent.CHANNEL_ID, (client, handler, packet, sender) -> {

@@ -57,13 +57,11 @@ public class ServerPlayerEntityMixin implements TempPlayerLoginAttachments {
 
     @Override
     public void setPolyvalentMap(PolyvalentMap map) {
-        System.out.println("Setting polyvalent map");
         this.polyMap = map;
     }
 
     @Override
     public PolyvalentMap getPolyvalentMap() {
-        System.out.println("Getting polyvalent map...");
         try {
             return this._getPolyvalentMap();
         } catch (Exception e) {
@@ -86,7 +84,6 @@ public class ServerPlayerEntityMixin implements TempPlayerLoginAttachments {
 
     @Override
     public void loadPolyvalentStates(int amount, PacketByteBuf buffer) {
-        System.out.println("Loading...");
         try {
             this._loadPolyvalentStates(amount, buffer);
         } catch (Exception e) {
@@ -96,8 +93,6 @@ public class ServerPlayerEntityMixin implements TempPlayerLoginAttachments {
     }
 
     private void _loadPolyvalentStates(int amount, PacketByteBuf buffer) {
-
-        System.out.println("Loading " + amount + " polyvalent states");
 
         int added = 0;
 
@@ -166,39 +161,5 @@ public class ServerPlayerEntityMixin implements TempPlayerLoginAttachments {
 
             added += amount_of_states;
         }
-
-        System.out.println("Finished loading " + added + " polyvalent states");
-
-    }
-
-    private void old_loadPolyvalentStates(int amount, PacketByteBuf buffer) {
-
-        int i = 0;
-
-        System.out.println("Loading " + amount + " polyvalent states");
-
-        PolyvalentMap map = this.getPolyvalentMap();
-
-        for (i = 0; i < amount; i++) {
-
-            // Get the data as it is known on the client
-            int client_raw_id = buffer.readVarInt();
-            String client_name = buffer.readString();
-
-            // And now get the raw id from the server
-            int server_raw_id = PolyvalentServer.BLOCK_STATE_ID_MAP.get(client_name);
-
-            if (client_raw_id != server_raw_id) {
-                map.setServerToClientId(server_raw_id, client_raw_id);
-            }
-
-            //int raw_id = Block.STATE_IDS.getRawId(state);
-            //buffer.writeVarInt(raw_id);
-            //buffer.writeString(state_id);
-
-        }
-
-        System.out.println("Finished loading " + i + " polyvalent states");
-
     }
 }
