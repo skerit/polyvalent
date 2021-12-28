@@ -10,6 +10,8 @@ import io.github.theepicblock.polymc.impl.generator.Generator;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import rocks.blackblock.polyvalent.block.PolyvalentBlock;
@@ -25,6 +27,8 @@ import java.util.List;
 public class PolyvalentServer implements DedicatedServerModInitializer {
 
     private static PolyvalentMap map = null;
+    private static LuckPerms luckPerms = null;
+    private static Boolean triedLuckPerms = false;
 
     // The profile to use for full material blocks
     public static final BlockStateProfile WOOD_BLOCK_PROFILE = Polyvalent.createBlockStateProfile("polyvalent_material_block", Polyvalent.WOOD_BLOCK);
@@ -34,6 +38,22 @@ public class PolyvalentServer implements DedicatedServerModInitializer {
     public static final BlockStateProfile LEAVES_BLOCK_PROFILE = Polyvalent.createBlockStateProfile("leaves_block", Polyvalent.LEAVES_BLOCK);
 
     public static final HashMap<String, Integer> BLOCK_STATE_ID_MAP = new HashMap<>();
+
+    public static LuckPerms getLuckPerms() {
+
+        if (!triedLuckPerms && luckPerms == null) {
+            triedLuckPerms = true;
+            try {
+                if (FabricLoader.getInstance().isModLoaded("luckperms")) {
+                    luckPerms = LuckPermsProvider.get();
+                }
+            } catch (Exception e) {
+                System.out.println("Failed to load LuckPerms! Polyvalent will not be able to use it.");
+            }
+        }
+
+        return luckPerms;
+    }
 
     /**
      * Generate our own polymap

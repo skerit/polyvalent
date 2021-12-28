@@ -11,10 +11,13 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
+
 	// Only during development
 	flatDir {
 		dirs '../PolyMC/build/libs/'
 	}
+
+	mavenCentral()
 
 	// Add repositories to retrieve artifacts from in here.
 	// You should only use this when depending on other mods because
@@ -34,6 +37,8 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 	modImplementation "com.github.TheEpicBlock:PolyMc:${project.polymc_version}"
+
+	compileOnly 'net.luckperms:api:5.3'
 }
 
 processResources {
