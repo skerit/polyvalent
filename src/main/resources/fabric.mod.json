@@ -4,16 +4,16 @@
   "version": "${version}",
 
   "name": "Polyvalent",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "description": "The Blackblock.rocks PolyMC companion mod",
   "authors": [
     "Jelle De Loecker"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://blackblock.rocks/",
+    "sources": "https://github.com/skerit/polyvalent"
   },
 
-  "license": "CC0-1.0",
+  "license": "LGPLv3",
   "icon": "assets/polyvalent/icon.png",
 
   "environment": "*",
@@ -40,5 +40,10 @@
   },
   "suggests": {
 
+  },
+  "custom": {
+    "modmenu": {
+      "badges": [ "library" ]
+    }
   }
 }
