@@ -20,6 +20,15 @@ It is required to be installed on both the server & client.
 
 Big thanks to [Patbox](https://github.com/patbox) for his [Polymer](https://github.com/patbox/polymer) project, which I used as a reference for the networking code.
 
+## Current state
+
+Polyvalent currently only implements new blockstates the server can use:
+
+- Full blocks
+- Slabs
+- Transparent blocks
+- Glowing blocks
+
 ## Authors
 - **Jelle De Loecker** -  *Follow* me on *Github* ([:octocat:@skerit](https://github.com/skerit)) and on  *Twitter* ([🐦@skeriten](http://twitter.com/intent/user?screen_name=skeriten))
 
