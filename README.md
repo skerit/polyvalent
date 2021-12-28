@@ -30,6 +30,6 @@ Polyvalent currently only implements new blockstates the server can use:
 - Glowing blocks
 
 ## Authors
-- **Jelle De Loecker** -  *Follow* me on *Github* ([:octocat:@skerit](https://github.com/skerit)) and on  *Twitter* ([🐦@skeriten](http://twitter.com/intent/user?screen_name=skeriten))
+- **Jelle De Loecker** - *Follow* me on *Github* ([:octocat:@skerit](https://github.com/skerit)) and on *Twitter* ([🐦@skeriten](http://twitter.com/intent/user?screen_name=skeriten))
 
 See also the list of [contributors](https://github.com/skerit/polyvalent/contributors) who participated in this project.

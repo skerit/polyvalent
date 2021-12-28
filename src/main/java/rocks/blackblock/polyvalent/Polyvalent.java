@@ -15,10 +15,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import rocks.blackblock.polyvalent.block.PolyFullBlock;
-import rocks.blackblock.polyvalent.block.PolySlabBlock;
-import rocks.blackblock.polyvalent.block.PolyTransparentBlock;
-import rocks.blackblock.polyvalent.block.PolyvalentBlock;
+import rocks.blackblock.polyvalent.block.*;
 import rocks.blackblock.polyvalent.item.PolyArmorItem;
 
 public class Polyvalent implements ModInitializer {
@@ -46,6 +43,7 @@ public class Polyvalent implements ModInitializer {
 	public static final PolyFullBlock GLOW_BLOCK = PolyvalentBlock.createGlowBlock("glow", Material.STONE);
 	public static final PolyTransparentBlock GLASS_BLOCK = PolyvalentBlock.createTransparentBlock("glass", Material.GLASS);
 	public static final PolySlabBlock SLAB_BLOCK = PolyvalentBlock.createSlabBlock("slab", Material.STONE);
+	public static final PolyLeavesBlock LEAVES_BLOCK = PolyvalentBlock.createLeavesBlock("leaves", Material.LEAVES);
 
 	public static PacketByteBuf buf(int version) {
 		var buf = new PacketByteBuf(Unpooled.buffer());
@@ -60,9 +58,9 @@ public class Polyvalent implements ModInitializer {
 	public void onInitialize() {
 
 		// Create 100 armor sets
-		for (int i = 1; i <= 100; i++) {
+		/*for (int i = 1; i <= 100; i++) {
 			PolyArmorItem.createSet(i);
-		}
+		}*/
 
 		// Create polyvalent blocks of each material
 		//PolyvalentBlock.createMaterialBlock("glass", Material.GLASS);

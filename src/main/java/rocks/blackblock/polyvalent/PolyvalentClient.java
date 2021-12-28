@@ -3,6 +3,7 @@ package rocks.blackblock.polyvalent;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.RenderLayer;
@@ -13,6 +14,7 @@ import rocks.blackblock.polyvalent.block.PolyvalentBlock;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 public class PolyvalentClient implements ClientModInitializer {
     @Override
@@ -21,9 +23,22 @@ public class PolyvalentClient implements ClientModInitializer {
             int number = packet.readInt();
         });
 
+        Random r = new Random();
+        int low = 0x00b359;
+        int high = 0xffff59;
+
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getTranslucent(),
                 Polyvalent.GLASS_BLOCK
         );
+
+        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutoutMipped(),
+                Polyvalent.LEAVES_BLOCK
+        );
+
+        ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) -> {
+            //return 0xebb359;
+            return r.nextInt(high-low) + low;
+        }, Polyvalent.LEAVES_BLOCK);
     }
 
     /**

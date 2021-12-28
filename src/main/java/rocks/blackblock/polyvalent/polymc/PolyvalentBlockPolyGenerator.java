@@ -8,10 +8,12 @@ import io.github.theepicblock.polymc.api.block.BlockStateProfile;
 import io.github.theepicblock.polymc.impl.generator.BlockPolyGenerator;
 import io.github.theepicblock.polymc.impl.poly.block.PropertyFilteringUnusedBlocksStatePoly;
 import io.github.theepicblock.polymc.impl.poly.block.SimpleReplacementPoly;
+import io.github.theepicblock.polymc.impl.poly.block.SingleUnusedBlockStatePoly;
 import io.github.theepicblock.polymc.impl.poly.block.UnusedBlockStatePoly;
 import net.minecraft.block.*;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -68,6 +70,13 @@ public class PolyvalentBlockPolyGenerator {
             material = state.getMaterial();
         } catch (Exception e) {
             PolyMc.LOGGER.warn("Failed to get material for " + block.getTranslationKey());
+        }
+
+        // === LEAVES ===
+        if (block instanceof LeavesBlock || BlockTags.LEAVES.contains(block)) { //TODO I don't like that leaves can be set tags in datapacks, it might cause issues. However, as not every leaf block extends LeavesBlock I can't see much of a better option. Except to maybe check the id if it ends on "_leaves"
+            try {
+                return new SingleUnusedBlockStatePoly(builder, PolyvalentServer.LEAVES_BLOCK_PROFILE);
+            } catch (BlockStateManager.StateLimitReachedException ignored) {}
         }
 
         //=== FULL BLOCKS ===
