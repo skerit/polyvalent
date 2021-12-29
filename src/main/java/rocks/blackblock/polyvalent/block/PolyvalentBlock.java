@@ -12,8 +12,7 @@ import rocks.blackblock.polyvalent.Polyvalent;
 public interface PolyvalentBlock {
 
     // The NONCE-property will be the main attribute used to differentiate blocks.
-    IntProperty NONCE = IntProperty.of("nonce", 0, 255);
-
+    IntProperty NONCE = IntProperty.of("nonce", 0, 999);
 
     /**
      * A shortcut to always return {@code true} a context predicate, used as

@@ -41,7 +41,7 @@ public class PolyvalentGenerator {
     }
 
     @FunctionalInterface
-    private interface BooleanFunction<T> {
+    public interface BooleanFunction<T> {
         boolean accept(T t);
     }
 }

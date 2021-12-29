@@ -56,6 +56,10 @@ public class Polyvalent implements ModInitializer {
 		return new Identifier(MOD_ID, path);
 	}
 
+	public static void log(Object o) {
+		LOGGER.info("[Polyvalent] " + o);
+	}
+
 	@Override
 	public void onInitialize() {
 
@@ -123,6 +127,18 @@ public class Polyvalent implements ModInitializer {
 
 		if (DETECTED_POLYMC) {
 			return BlockStateProfile.getProfileWithDefaultFilter(name, block);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Create a blockstateprofile if PolyMC is loaded
+	 */
+	public static BlockStateProfile createBlockStateProfile(String name, Block[] blocks) {
+
+		if (DETECTED_POLYMC) {
+			return BlockStateProfile.getProfileWithDefaultFilter(name, blocks);
 		}
 
 		return null;

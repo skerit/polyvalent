@@ -39,6 +39,14 @@ public class PolyvalentServer implements DedicatedServerModInitializer {
 
     public static final HashMap<String, Integer> BLOCK_STATE_ID_MAP = new HashMap<>();
 
+    public static boolean hasLuckPerms() {
+        if (luckPerms != null) {
+            return true;
+        }
+
+        return FabricLoader.getInstance().isModLoaded("luckperms");
+    }
+
     public static LuckPerms getLuckPerms() {
 
         if (!triedLuckPerms && luckPerms == null) {
@@ -48,7 +56,7 @@ public class PolyvalentServer implements DedicatedServerModInitializer {
                     luckPerms = LuckPermsProvider.get();
                 }
             } catch (Exception e) {
-                System.out.println("Failed to load LuckPerms! Polyvalent will not be able to use it.");
+                Polyvalent.log("Failed to load LuckPerms! Polyvalent will not be able to use it.");
             }
         }
 
@@ -66,6 +74,8 @@ public class PolyvalentServer implements DedicatedServerModInitializer {
             throw new IllegalStateException("Polyvalent PolyMap already generated!");
         }
 
+        Polyvalent.log("Generating Polyvalent map...");
+
         PolyvalentRegistry registry = new PolyvalentRegistry();
 
         // Register default global ItemPolys
@@ -82,7 +92,7 @@ public class PolyvalentServer implements DedicatedServerModInitializer {
 
         map = registry.build();
 
-        System.out.println("Generated PolyMap: " + map);
+        Polyvalent.log("Finished generated Polyvalent map");
     }
 
     /**
@@ -105,6 +115,8 @@ public class PolyvalentServer implements DedicatedServerModInitializer {
             throw new IllegalStateException("Polyvalent must be used together with PolyMc on the server");
         }
 
+        Polyvalent.log("Registering Polyvalent commands...");
+
         PolyvalentCommands.registerCommands();
 
         PolyMapProvider.EVENT.register(player -> {
@@ -118,6 +130,8 @@ public class PolyvalentServer implements DedicatedServerModInitializer {
         });
 
         int number = -1;
+
+        Polyvalent.log("Registering all block states...");
 
         // Create a map to all the state ids
         for (BlockState state : Block.STATE_IDS) {
@@ -133,6 +147,8 @@ public class PolyvalentServer implements DedicatedServerModInitializer {
                 BLOCK_STATE_ID_MAP.put(state_name, id);
             }
         }
+
+        Polyvalent.log("Finished registering all block states");
     }
 
 }

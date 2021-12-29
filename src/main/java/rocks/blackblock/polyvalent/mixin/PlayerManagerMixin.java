@@ -29,16 +29,19 @@ public class PlayerManagerMixin {
 
             System.out.println("Sending blockidmap to the polyvalent client...");
 
-            LuckPerms luckPerms = PolyvalentServer.getLuckPerms();
+            if (PolyvalentServer.hasLuckPerms()) {
 
-            if (luckPerms != null) {
-                UserManager userManager = luckPerms.getUserManager();
-                CompletableFuture<User> userFuture = userManager.loadUser(player.getUuid());
+                LuckPerms luckPerms = PolyvalentServer.getLuckPerms();
 
-                userFuture.thenAcceptAsync(user -> {
-                    user.data().add(Node.builder("polyvalent.has_client").build());
-                    luckPerms.getUserManager().saveUser(user);
-                });
+                if (luckPerms != null) {
+                    UserManager userManager = luckPerms.getUserManager();
+                    CompletableFuture<User> userFuture = userManager.loadUser(player.getUuid());
+
+                    userFuture.thenAcceptAsync(user -> {
+                        user.data().add(Node.builder("polyvalent.has_client").build());
+                        luckPerms.getUserManager().saveUser(user);
+                    });
+                }
             }
 
             try {

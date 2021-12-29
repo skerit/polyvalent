@@ -31,12 +31,7 @@ public class PolyvalentBlockPolyGenerator {
      */
     public static void addBlockToBuilder(Block block, PolyRegistry builder) {
         try {
-            System.out.println("Adding block to builder: " + block);
             BlockPoly poly = generatePoly(block, builder);
-
-            if (poly == null) {
-                System.out.println(" -- Poly is null!");
-            }
 
             builder.registerBlockPoly(block, poly);
         } catch (Exception e) {
@@ -77,6 +72,18 @@ public class PolyvalentBlockPolyGenerator {
             try {
                 return new SingleUnusedBlockStatePoly(builder, PolyvalentServer.LEAVES_BLOCK_PROFILE);
             } catch (BlockStateManager.StateLimitReachedException ignored) {}
+        }
+
+        if (block instanceof SlabBlock) {
+            try {
+                Property<?>[] properties = new Property[]{Properties.SLAB_TYPE, Properties.WATERLOGGED};
+
+                return new PropertyRetainingUnusedBlocksStatePoly(block, builder, Polyvalent.SLAB_BLOCK, properties);
+            } catch (Exception e) {
+                // Ignore
+                System.out.println("Failed to generate a slab block " + e);
+                e.printStackTrace();
+            }
         }
 
         //=== FULL BLOCKS ===
@@ -123,26 +130,6 @@ public class PolyvalentBlockPolyGenerator {
                 e.printStackTrace();
             }
         }
-
-        if (block instanceof SlabBlock) {
-            try {
-                /*
-                ArrayList<Property<?>> properties = new ArrayList<>();
-                properties.add(Properties.SLAB_TYPE);
-                properties.add(Properties.WATERLOGGED);
-                 */
-
-                Property<?>[] properties = new Property[]{Properties.SLAB_TYPE, Properties.WATERLOGGED};
-
-                return new PropertyRetainingUnusedBlocksStatePoly(block, builder, Polyvalent.SLAB_BLOCK, properties);
-            } catch (Exception e) {
-                // Ignore
-                System.out.println("Failed to generate a slab block " + e);
-                e.printStackTrace();
-            }
-        }
-
-        System.out.println("  Falling back!");
 
         // Fallback!
         return BlockPolyGenerator.generatePoly(block, builder);

@@ -34,17 +34,17 @@ public class PropertyRetainingUnusedBlocksStatePoly implements BlockPoly {
     private static final BiConsumer<Block,PolyRegistry> DEFAULT_ON_FIRST_REGISTER = (block, polyRegistry) -> polyRegistry.registerBlockPoly(block, new SimpleReplacementPoly(block.getDefaultState()));
 
     /**
-     * @param moddedBlock  the block this poly represents
-     * @param registry     registry used to register this poly
-     * @param filter       function that should remove all blockstates that you want to filter
+     * @param  moddedBlock  the block this poly represents
+     * @param  registry     registry used to register this poly
+     * @param  properties  The properties that should be retained
      * @throws BlockStateManager.StateLimitReachedException when the clientSideBlock doesn't have any more BlockStates left.
      */
-    public PropertyRetainingUnusedBlocksStatePoly(Block moddedBlock, PolyRegistry registry, Block replacementBlock, Property<?>[] filter) throws BlockStateManager.StateLimitReachedException {
+    public PropertyRetainingUnusedBlocksStatePoly(Block moddedBlock, PolyRegistry registry, Block replacementBlock, Property<?>[] properties) throws BlockStateManager.StateLimitReachedException {
 
         // Get the default blockstate values for the properties we want to retain
-        Object[] defaultValues = new Object[filter.length];
+        Object[] defaultValues = new Object[properties.length];
         int i = -1;
-        for (Property<?> p : filter) {
+        for (Property<?> p : properties) {
             i++;
             defaultValues[i] = (moddedBlock.getDefaultState().get(p));
         }
@@ -54,7 +54,7 @@ public class PropertyRetainingUnusedBlocksStatePoly implements BlockPoly {
             boolean result = true;
 
             int i3 = -1;
-            for (Property<?> p : filter) {
+            for (Property<?> p : properties) {
                 i3++;
                 result = blockState.get(p).equals(defaultValues[i3]);
 
@@ -68,9 +68,9 @@ public class PropertyRetainingUnusedBlocksStatePoly implements BlockPoly {
 
         Collection<Property<?>> moddedProperties = moddedBlock.getStateManager().getProperties();
 
-        this.properties = filter;
+        this.properties = properties;
 
-        for (Property<?> p : filter) {
+        for (Property<?> p : properties) {
             if (!moddedProperties.contains(p)) {
                 throw new IllegalArgumentException(String.format("[%s]: %s doesn't have property %s", this.getClass().getName(), moddedBlock.getTranslationKey(), p.getName()));
             }
@@ -79,7 +79,7 @@ public class PropertyRetainingUnusedBlocksStatePoly implements BlockPoly {
 
         Function<BlockState,BlockState> filterFunction = (blockstate) -> {
             int i2 = -1;
-            for (Property<?> p : filter) {
+            for (Property<?> p : properties) {
                 i2++;
                 blockstate = with(blockstate, p, defaultValues[i2]);
             }
@@ -99,24 +99,19 @@ public class PropertyRetainingUnusedBlocksStatePoly implements BlockPoly {
         ImmutableMap<BlockState,BlockState> states;
         BlockStateManager manager = registry.getBlockStateManager();
 
-        ImmutableList<BlockState> unFilteredModdedStates = moddedBlock.getStateManager().getStates();
-
-        //BlockState[] moddedStates = unFilteredModdedStates.stream().map(filter).toArray(BlockState[]::new);
-        BlockState[] moddedStates = unFilteredModdedStates.toArray(BlockState[]::new);
+        // Get all the blockstates of this modded block
+        BlockState[] moddedStates = moddedBlock.getStateManager().getStates().toArray(BlockState[]::new);
 
         if (!manager.isAvailable(stateProfile, moddedStates.length)) {
             throw new BlockStateManager.StateLimitReachedException("Block doesn't have enough blockstates left. Profile: '" + stateProfile.name + "'");
         }
 
+        // Get the default state of this modded block
         BlockState defaultState = manager.requestBlockState(stateProfile);
-        // Request 2 more?
-
 
         HashMap<BlockState,BlockState> res = new HashMap<>();
         for (BlockState state : moddedStates) {
             BlockState replacementState = defaultState;
-
-            System.out.println("Requested: " + replacementState + " for " + state);
 
             for (Property<?> p : this.properties) {
                 replacementState = copyProperty(replacementState, state, p);

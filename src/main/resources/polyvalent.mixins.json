@@ -16,7 +16,8 @@
         "ServerLoginNetworkHandlerMixin",
         "ServerPlayerEntityMixin",
         "ServerPlayNetworkHandlerMixin",
-        "ServerStartMixin"
+        "ServerStartMixin",
+        "PolyMcGeneratorMixin"
     ],
     "injectors": {
         "defaultRequire": 1
