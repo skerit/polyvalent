@@ -31,13 +31,7 @@ public class PolyvalentBlockPolyGenerator {
      */
     public static void addBlockToBuilder(Block block, PolyRegistry builder) {
         try {
-            System.out.println("Adding block to builder: " + block);
             BlockPoly poly = generatePoly(block, builder);
-
-            if (poly == null) {
-                System.out.println(" -- Poly is null!");
-            }
-
             builder.registerBlockPoly(block, poly);
         } catch (Exception e) {
             PolyMc.LOGGER.error("Failed to generate a poly for block " + block.getTranslationKey());

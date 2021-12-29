@@ -14,6 +14,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -25,6 +26,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class PolyvalentMap extends PolyMapImpl {
+
+    private static final String ORIGINAL_ITEM_NBT = "PolyMcOriginal";
 
     private final ImmutableMap<Item, ItemPoly> original_itemPolys;
     private final ItemTransformer[] original_globalItemPolys;
@@ -43,6 +46,33 @@ public class PolyvalentMap extends PolyMapImpl {
         this.original_blockPolys = blockPolys;
         this.original_guiPolys = guiPolys;
         this.original_entityPolys = entityPolys;
+    }
+
+    @Override
+    public ItemStack getClientItem(ItemStack serverItem, @Nullable ServerPlayerEntity player) {
+        ItemStack ret = serverItem;
+        NbtCompound originalNbt = serverItem.writeNbt(new NbtCompound());
+
+        ItemPoly poly = original_itemPolys.get(serverItem.getItem());
+        if (poly != null) ret = poly.getClientItem(serverItem);
+
+        System.out.println("PolyvalentMap.getClientItem: " + serverItem + " to " + ret);
+
+        for (ItemTransformer globalPoly : original_globalItemPolys) {
+            ret = globalPoly.transform(ret);
+        }
+
+        System.out.println(" -- Now: " + ret);
+
+        if ((player == null || player.isCreative()) && !ItemStack.canCombine(serverItem, ret) && !serverItem.isEmpty()) {
+            // Preserves the nbt of the original item so it can be reverted
+            ret = ret.copy();
+            ret.setSubNbt(ORIGINAL_ITEM_NBT, originalNbt);
+        }
+
+        System.out.println(" -- And: " + ret);
+
+        return ret;
     }
 
     /**

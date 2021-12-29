@@ -47,6 +47,20 @@ public class Polyvalent implements ModInitializer {
 	public static final PolySlabBlock SLAB_BLOCK = PolyvalentBlock.createSlabBlock("slab", Material.STONE);
 	public static final PolyLeavesBlock LEAVES_BLOCK = PolyvalentBlock.createLeavesBlock("leaves", Material.LEAVES);
 
+	public static final BlockItem WOOD_BLOCK_ITEM = registerItem("dummy_wood_block", new BlockItem(WOOD_BLOCK, new Item.Settings()));
+
+	public static final Item DUMMY_ONE = registerItem("dummy_one", new Item(new Item.Settings()));
+	public static final Item DUMMY_TWO = registerItem("dummy_two", new Item(new Item.Settings()));
+	public static final Item DUMMY_THREE = registerItem("dummy_three", new Item(new Item.Settings()));
+	public static final Item DUMMY_FOUR = registerItem("dummy_four", new Item(new Item.Settings()));
+
+	public final static Item[] DUMMY_ITEMS = {
+			DUMMY_ONE,
+			DUMMY_TWO,
+			DUMMY_THREE,
+			DUMMY_FOUR
+	};
+
 	public static PacketByteBuf buf(int version) {
 		var buf = new PacketByteBuf(Unpooled.buffer());
 		return buf.writeVarInt(version);
