@@ -40,7 +40,7 @@ public class PolyvalentClientProtocol {
             // Write all available Polyvalent blockstates to the buffer
             PolyvalentClient.writeBlockStateRawIds(buf);
 
-            System.out.println("Sending handshake...");
+            Polyvalent.log("Sending handshake with Polyvalent blockstates to server");
 
             handler.sendPacket(new CustomPayloadC2SPacket(ClientPackets.HANDSHAKE_ID, buf));
         }

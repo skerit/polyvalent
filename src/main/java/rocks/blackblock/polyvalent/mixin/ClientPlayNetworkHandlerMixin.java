@@ -48,6 +48,7 @@ public abstract class ClientPlayNetworkHandlerMixin {
         // When the server sends our special keep-alive packet, we know that the server is a Polyvalent server,
         // and we can now send our handshake packet.
         if (packet.getId() == PolyvalentHandshakeHandlerLogin.MAGIC_VALUE) {
+            Polyvalent.log("Polyvalent server detected: received magic handshake packet.");
             PolyvalentClientProtocol.sendHandshake((ClientPlayNetworkHandler) (Object) this);
         }
     }

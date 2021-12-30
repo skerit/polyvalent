@@ -122,6 +122,8 @@ public class PolyvalentServer implements DedicatedServerModInitializer {
         PolyMapProvider.EVENT.register(player -> {
             TempPlayerLoginAttachments player_login = (TempPlayerLoginAttachments) player;
 
+            Polyvalent.log("Getting Polyvalent map for " + player.getEntityName() + ", do they have polyvalent? " + player_login.hasPolyvalent());
+
             if (player_login.hasPolyvalent()) {
                 return player_login.getPolyvalentMap();
             }

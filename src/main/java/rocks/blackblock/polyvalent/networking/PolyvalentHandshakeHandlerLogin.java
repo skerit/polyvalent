@@ -40,7 +40,7 @@ public class PolyvalentHandshakeHandlerLogin implements PolyvalentHandshakeHandl
         this.connection.setPacketListener(this);
         this.connection.setState(NetworkState.PLAY);
 
-        System.out.println("Sending handshake request to client...");
+        Polyvalent.log("Sending magic handshake request to client...");
 
         ((TempPlayerLoginAttachments) player).polyvalent_setHandshakeHandler(this);
         this.connection.send(new KeepAliveS2CPacket(MAGIC_VALUE));
@@ -98,17 +98,29 @@ public class PolyvalentHandshakeHandlerLogin implements PolyvalentHandshakeHandl
     @Override
     public void apply(ServerPlayNetworkHandler handler) {
         var polyvalentHandler = PolyvalentNetworkHandlerExtension.of(handler);
-
         polyvalentHandler.polyvalent_setVersion(this.getPolyvalentVersion());
-
     }
 
     @Override
     public void onCustomPayload(CustomPayloadC2SPacket packet) {
         var data = packet.getData();
         if (packet.getChannel().equals(ClientPackets.HANDSHAKE_ID)) {
-            System.out.println("Received custom packet request from client...");
+            Polyvalent.log("Received handshake data from client...");
             PolyvalentServerProtocolHandler.handleHandshake(this, data.readVarInt(), data);
+        }
+    }
+
+    @Override
+    public void onKeepAlive(KeepAliveC2SPacket packet) {
+
+        NetworkThreadUtils.forceMainThread(packet, this, this.server);
+
+        // If the client also has the Polyvalent mod, it should actually prevent a response.
+        // So when we do get the magic value back, this means that the client doesn't have the mod.
+        // (Unless the server is running behind a proxy like Velocity, which interferes with keepalive packets)
+        if (packet.getId() == MAGIC_VALUE) {
+            Polyvalent.log("Received magic keepalive response from client.");
+            this.continueJoining.accept(this);
         }
     }
 
@@ -155,16 +167,6 @@ public class PolyvalentHandshakeHandlerLogin implements PolyvalentHandshakeHandl
     @Override
     public void onPlayerInteractEntity(PlayerInteractEntityC2SPacket packet) {
 
-    }
-
-    @Override
-    public void onKeepAlive(KeepAliveC2SPacket packet) {
-
-        NetworkThreadUtils.forceMainThread(packet, this, this.server);
-
-        if (packet.getId() == MAGIC_VALUE) {
-            this.continueJoining.accept(this);
-        }
     }
 
     @Override

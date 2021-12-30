@@ -36,8 +36,13 @@ public abstract class ServerLoginNetworkHandlerMixin {
             return;
         }
 
-        // Do a handshake check
+        // Delay the login until the client has finished the handshake.
+        // The handshake won't work reliably if the server is run behind a proxy like Velocity,
+        // because Velocity handles keepalive packets and does not forward them to the server
         new PolyvalentHandshakeHandlerLogin(this.server, player, this.connection, (self) -> {
+
+            Polyvalent.log("Finished handshake for " + player.getEntityName() + ", adding to server.");
+
             this.checked_polyvalent_client = true;
             this.addToServer(player);
         });
