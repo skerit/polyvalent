@@ -8,9 +8,6 @@ public interface TempPlayerLoginAttachments {
     void polyvalent_setWorldReload(boolean value);
     boolean polyvalent_getWorldReload();
 
-    PolyvalentHandshakeHandler polyvalent_getAndRemoveHandshakeHandler();
-
-    void polyvalent_setHandshakeHandler(PolyvalentHandshakeHandler handler);
 
     void setHasPolyvalent(boolean has_polyvalent);
     boolean hasPolyvalent();

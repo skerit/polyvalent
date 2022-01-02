@@ -1,25 +1,25 @@
 {
-    "required": true,
-    "minVersion": "0.8",
-    "package": "rocks.blackblock.polyvalent.mixin",
-    "compatibilityLevel": "JAVA_16",
-    "mixins": [
-        "CustomPayloadS2CPacketAccessor"
-    ],
-    "client": [
-        "ClientItemStackMixin",
-        "ClientPlayNetworkHandlerMixin",
-        "DebugHudMixin"
-    ],
-    "server": [
-        "PlayerManagerMixin",
-        "ServerLoginNetworkHandlerMixin",
-        "ServerPlayerEntityMixin",
-        "ServerPlayNetworkHandlerMixin",
-        "ServerStartMixin",
-        "PolyMcGeneratorMixin"
-    ],
-    "injectors": {
-        "defaultRequire": 1
+  "required": true,
+  "minVersion": "0.8",
+  "package": "rocks.blackblock.polyvalent.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+    "CustomPayloadS2CPacketAccessor",
+    "StateMixin"
+  ],
+  "client": [
+    "ClientItemStackMixin",
+    "DebugHudMixin",
+    "ServerCheckMixin"
+  ],
+  "server": [
+    "ClientConnectionMixin",
+    "PlayerManagerMixin",
+    "PolyMcGeneratorMixin",
+    "ServerPlayerEntityMixin",
+    "ServerStartMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
   }
 }

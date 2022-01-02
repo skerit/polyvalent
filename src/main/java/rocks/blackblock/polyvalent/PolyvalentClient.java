@@ -11,6 +11,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import rocks.blackblock.polyvalent.block.PolyvalentBlock;
+import rocks.blackblock.polyvalent.networking.ModPacketsS2C;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,12 +21,16 @@ public class PolyvalentClient implements ClientModInitializer {
 
     public static HashMap<Integer, Identifier> actualBlockIdentifiers = new HashMap<>();
     public static HashMap<Integer, Identifier> actualItemIdentifiers = new HashMap<>();
+    public static boolean connectedToPolyvalentServer = false;
+
+    public static void reset() {
+        connectedToPolyvalentServer = false;
+    }
 
     @Override
     public void onInitializeClient() {
-        ClientPlayNetworking.registerGlobalReceiver(Polyvalent.CHANNEL_ID, (client, handler, packet, sender) -> {
-            int number = packet.readInt();
-        });
+
+        ModPacketsS2C.register();
 
         Random r = new Random();
         int low = 0x00b359;
@@ -64,7 +69,7 @@ public class PolyvalentClient implements ClientModInitializer {
         // (We won't write each state to the buffer anymore)
         buffer.writeVarInt(polyvalent_states.size());
 
-        System.out.println("There are " + polyvalent_states.size() + " polyvalent states");
+        Polyvalent.log("There are " + polyvalent_states.size() + " client-side polyvalent states");
 
         HashMap<String, Integer> block_state_count = new HashMap<>();
         HashMap<String, Integer> block_state_start = new HashMap<>();
@@ -94,7 +99,7 @@ public class PolyvalentClient implements ClientModInitializer {
         }
 
         for (String name : block_state_count.keySet()) {
-            System.out.println("Block " + name + " has " + block_state_count.get(name) + " states");
+            Polyvalent.log("Block " + name + " has " + block_state_count.get(name) + " states");
             Integer count = block_state_count.get(name);
             Integer start_id = block_state_start.get(name);
 
@@ -103,6 +108,6 @@ public class PolyvalentClient implements ClientModInitializer {
             buffer.writeVarInt(start_id);
         }
 
-        System.out.println("Buffer is now: " + buffer.readableBytes() + " bytes");
+        Polyvalent.log("Buffer is now: " + buffer.readableBytes() + " bytes");
     }
 }

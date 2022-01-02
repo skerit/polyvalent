@@ -18,6 +18,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
+import rocks.blackblock.polyvalent.Polyvalent;
 import rocks.blackblock.polyvalent.block.PolyvalentBlock;
 import rocks.blackblock.polyvalent.networking.TempPlayerLoginAttachments;
 
@@ -68,6 +69,13 @@ public class PolyvalentMap extends PolyMapImpl {
         }
 
         return state_id;
+    }
+
+    public PolyvalentMap createPlayerMap() {
+
+        PolyvalentMap map = new PolyvalentMap(this.original_itemPolys, this.original_globalItemPolys, this.original_blockPolys, this.original_guiPolys, this.original_entityPolys);
+
+        return map;
     }
 
     public PolyvalentMap createPlayerMap(ServerPlayerEntity player) {

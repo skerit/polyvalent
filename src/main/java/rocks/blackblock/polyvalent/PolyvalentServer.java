@@ -15,6 +15,7 @@ import net.luckperms.api.LuckPermsProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import rocks.blackblock.polyvalent.block.PolyvalentBlock;
+import rocks.blackblock.polyvalent.networking.PolyvalentAttachments;
 import rocks.blackblock.polyvalent.networking.TempPlayerLoginAttachments;
 import rocks.blackblock.polyvalent.polymc.PolyvalentGenerator;
 import rocks.blackblock.polyvalent.polymc.PolyvalentMap;
@@ -120,15 +121,8 @@ public class PolyvalentServer implements DedicatedServerModInitializer {
         PolyvalentCommands.registerCommands();
 
         PolyMapProvider.EVENT.register(player -> {
-            TempPlayerLoginAttachments player_login = (TempPlayerLoginAttachments) player;
-
-            Polyvalent.log("Getting Polyvalent map for " + player.getEntityName() + ", do they have polyvalent? " + player_login.hasPolyvalent());
-
-            if (player_login.hasPolyvalent()) {
-                return player_login.getPolyvalentMap();
-            }
-
-            return null;
+            PolyvalentAttachments attachments = (PolyvalentAttachments) player.networkHandler.connection;
+            return attachments.getPolyvalentMap();
         });
 
         int number = -1;

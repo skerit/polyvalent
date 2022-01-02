@@ -1,19 +1,21 @@
 package rocks.blackblock.polyvalent.mixin;
 
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.network.ClientConnection;
 import org.spongepowered.asm.mixin.Mixin;
+import rocks.blackblock.polyvalent.Polyvalent;
 import rocks.blackblock.polyvalent.networking.PolyvalentAttachments;
 import rocks.blackblock.polyvalent.polymc.PolyvalentMap;
 
-@Mixin(ServerPlayerEntity.class)
-public class ServerPlayerEntityMixin implements PolyvalentAttachments {
+@Mixin(ClientConnection.class)
+public class ClientConnectionMixin implements PolyvalentAttachments {
 
-    PolyvalentMap polyvalentMap = null;
+    private PolyvalentMap polyvalentMap = null;
     boolean isPolyvalent = false;
 
     @Override
     public void setIsPolyvalent(boolean isPolyvalent) {
         this.isPolyvalent = isPolyvalent;
+        Polyvalent.log("Made connection polyvalent? " + isPolyvalent);
     }
 
     @Override
@@ -23,9 +25,7 @@ public class ServerPlayerEntityMixin implements PolyvalentAttachments {
 
     @Override
     public void setPolyvalentMap(PolyvalentMap polyvalentMap) {
-        this.isPolyvalent = polyvalentMap != null;
         this.polyvalentMap = polyvalentMap;
-        polyvalentMap.setPlayer((ServerPlayerEntity) (Object) this);
     }
 
     @Override

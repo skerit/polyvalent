@@ -17,6 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import rocks.blackblock.polyvalent.block.*;
 import rocks.blackblock.polyvalent.item.PolyArmorItem;
+import rocks.blackblock.polyvalent.networking.ModPacketsC2S;
 
 public class Polyvalent implements ModInitializer {
 
@@ -73,6 +74,8 @@ public class Polyvalent implements ModInitializer {
 		//PolyvalentBlock.createMaterialBlock("leaves", Material.LEAVES);
 		//PolyvalentBlock.createMaterialBlock("soil", Material.SOIL);
 		//PolyvalentBlock.createMaterialBlock("water", Material.WATER);
+
+		ModPacketsC2S.register();
 	}
 
 	/**
