@@ -78,7 +78,7 @@ public class PolyvalentBlockPolyGenerator {
             try {
                 Property<?>[] properties = new Property[]{Properties.SLAB_TYPE, Properties.WATERLOGGED};
 
-                return new PropertyRetainingUnusedBlocksStatePoly(block, builder, Polyvalent.SLAB_BLOCK, properties);
+                return new PropertyRetainingUnusedBlocksStatePoly(block, builder, Polyvalent.SLAB_BLOCKS, properties);
             } catch (Exception e) {
                 // Ignore
                 System.out.println("Failed to generate a slab block " + e);

@@ -37,17 +37,21 @@ public class PolyvalentClient implements ClientModInitializer {
         int high = 0xffff59;
 
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getTranslucent(),
-                Polyvalent.GLASS_BLOCK
+                Polyvalent.GLASS_BLOCK_ONE,
+                Polyvalent.GLASS_BLOCK_TWO,
+                Polyvalent.GLASS_BLOCK_THREE
         );
 
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutoutMipped(),
-                Polyvalent.LEAVES_BLOCK
+                Polyvalent.LEAVES_BLOCK_ONE,
+                Polyvalent.LEAVES_BLOCK_TWO,
+                Polyvalent.LEAVES_BLOCK_THREE
         );
 
         ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) -> {
             //return 0xebb359;
             return r.nextInt(high-low) + low;
-        }, Polyvalent.LEAVES_BLOCK);
+        }, Polyvalent.LEAVES_BLOCK_ONE, Polyvalent.LEAVES_BLOCK_TWO, Polyvalent.LEAVES_BLOCK_THREE);
     }
 
     /**

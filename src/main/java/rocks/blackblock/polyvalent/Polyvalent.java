@@ -41,12 +41,36 @@ public class Polyvalent implements ModInitializer {
 	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LogManager.getLogger("polyvalent");
 
-	public static final PolyFullBlock WOOD_BLOCK = PolyvalentBlock.createMaterialBlock("wood", Material.WOOD);
-	public static final PolyFullBlock STONE_BLOCK = PolyvalentBlock.createMaterialBlock("stone", Material.STONE);
-	public static final PolyFullBlock GLOW_BLOCK = PolyvalentBlock.createGlowBlock("glow", Material.STONE);
-	public static final PolyTransparentBlock GLASS_BLOCK = PolyvalentBlock.createTransparentBlock("glass", Material.GLASS);
-	public static final PolySlabBlock SLAB_BLOCK = PolyvalentBlock.createSlabBlock("slab", Material.STONE);
-	public static final PolyLeavesBlock LEAVES_BLOCK = PolyvalentBlock.createLeavesBlock("leaves", Material.LEAVES);
+	public static final PolyFullBlock WOOD_BLOCK_ONE = PolyvalentBlock.createMaterialBlock("wood_one", Material.WOOD);
+	public static final PolyFullBlock WOOD_BLOCK_TWO = PolyvalentBlock.createMaterialBlock("wood_two", Material.WOOD);
+
+	public static final PolyFullBlock STONE_BLOCK_ONE = PolyvalentBlock.createMaterialBlock("stone_one", Material.STONE);
+	public static final PolyFullBlock STONE_BLOCK_TWO = PolyvalentBlock.createMaterialBlock("stone_two", Material.STONE);
+	public static final PolyFullBlock STONE_BLOCK_THREE = PolyvalentBlock.createMaterialBlock("stone_three", Material.STONE);
+	public static final PolyFullBlock STONE_BLOCK_FOUR = PolyvalentBlock.createMaterialBlock("stone_four", Material.STONE);
+
+	public static final PolyFullBlock GLOW_BLOCK_ONE = PolyvalentBlock.createGlowBlock("glow_one", Material.STONE);
+	public static final PolyFullBlock GLOW_BLOCK_TWO = PolyvalentBlock.createGlowBlock("glow_two", Material.STONE);
+	public static final PolyFullBlock GLOW_BLOCK_THREE = PolyvalentBlock.createGlowBlock("glow_three", Material.STONE);
+
+	public static final PolyTransparentBlock GLASS_BLOCK_ONE = PolyvalentBlock.createTransparentBlock("glass_one", Material.GLASS);
+	public static final PolyTransparentBlock GLASS_BLOCK_TWO = PolyvalentBlock.createTransparentBlock("glass_two", Material.GLASS);
+	public static final PolyTransparentBlock GLASS_BLOCK_THREE = PolyvalentBlock.createTransparentBlock("glass_three", Material.GLASS);
+
+	public static final PolySlabBlock SLAB_BLOCK_ONE = PolyvalentBlock.createSlabBlock("slab_one", Material.STONE);
+	public static final PolySlabBlock SLAB_BLOCK_TWO = PolyvalentBlock.createSlabBlock("slab_two", Material.STONE);
+	public static final PolySlabBlock SLAB_BLOCK_THREE = PolyvalentBlock.createSlabBlock("slab_three", Material.STONE);
+
+	public static final PolyLeavesBlock LEAVES_BLOCK_ONE = PolyvalentBlock.createLeavesBlock("leaves_one", Material.LEAVES);
+	public static final PolyLeavesBlock LEAVES_BLOCK_TWO = PolyvalentBlock.createLeavesBlock("leaves_two", Material.LEAVES);
+	public static final PolyLeavesBlock LEAVES_BLOCK_THREE = PolyvalentBlock.createLeavesBlock("leaves_three", Material.LEAVES);
+
+	public static final PolyFullBlock[] WOOD_BLOCKS = {WOOD_BLOCK_ONE, WOOD_BLOCK_TWO};
+	public static final PolyFullBlock[] STONE_BLOCKS = {STONE_BLOCK_ONE, STONE_BLOCK_TWO, STONE_BLOCK_THREE, STONE_BLOCK_FOUR};
+	public static final PolyFullBlock[] GLOW_BLOCKS = {GLOW_BLOCK_ONE, GLOW_BLOCK_TWO, GLOW_BLOCK_THREE};
+	public static final PolyTransparentBlock[] GLASS_BLOCKS = {GLASS_BLOCK_ONE, GLASS_BLOCK_TWO, GLASS_BLOCK_THREE};
+	public static final PolySlabBlock[] SLAB_BLOCKS = {SLAB_BLOCK_ONE, SLAB_BLOCK_TWO, SLAB_BLOCK_THREE};
+	public static final PolyLeavesBlock[] LEAVES_BLOCKS = {LEAVES_BLOCK_ONE, LEAVES_BLOCK_TWO, LEAVES_BLOCK_THREE};
 
 	public static PacketByteBuf buf(int version) {
 		var buf = new PacketByteBuf(Unpooled.buffer());

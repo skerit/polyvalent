@@ -32,11 +32,11 @@ public class PolyvalentServer implements DedicatedServerModInitializer {
     private static Boolean triedLuckPerms = false;
 
     // The profile to use for full material blocks
-    public static final BlockStateProfile WOOD_BLOCK_PROFILE = Polyvalent.createBlockStateProfile("polyvalent_material_block", Polyvalent.WOOD_BLOCK);
-    public static final BlockStateProfile GLOW_BLOCK_PROFILE = Polyvalent.createBlockStateProfile("glow_material_block", Polyvalent.GLOW_BLOCK);
-    public static final BlockStateProfile STONE_BLOCK_PROFILE = Polyvalent.createBlockStateProfile("stone_material_block", Polyvalent.STONE_BLOCK);
-    public static final BlockStateProfile GLASS_BLOCK_PROFILE = Polyvalent.createBlockStateProfile("glass_material_block", Polyvalent.GLASS_BLOCK);
-    public static final BlockStateProfile LEAVES_BLOCK_PROFILE = Polyvalent.createBlockStateProfile("leaves_block", Polyvalent.LEAVES_BLOCK);
+    public static final BlockStateProfile WOOD_BLOCK_PROFILE = Polyvalent.createBlockStateProfile("polyvalent_material_block", Polyvalent.WOOD_BLOCKS);
+    public static final BlockStateProfile GLOW_BLOCK_PROFILE = Polyvalent.createBlockStateProfile("glow_material_block", Polyvalent.GLOW_BLOCKS);
+    public static final BlockStateProfile STONE_BLOCK_PROFILE = Polyvalent.createBlockStateProfile("stone_material_block", Polyvalent.STONE_BLOCKS);
+    public static final BlockStateProfile GLASS_BLOCK_PROFILE = Polyvalent.createBlockStateProfile("glass_material_block", Polyvalent.GLASS_BLOCKS);
+    public static final BlockStateProfile LEAVES_BLOCK_PROFILE = Polyvalent.createBlockStateProfile("leaves_block", Polyvalent.LEAVES_BLOCKS);
 
     public static final HashMap<String, Integer> BLOCK_STATE_ID_MAP = new HashMap<>();
 

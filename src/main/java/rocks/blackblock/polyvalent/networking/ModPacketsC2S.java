@@ -128,12 +128,14 @@ public class ModPacketsC2S {
             int start_id = buffer.readVarInt();
             int nonce_nr = -1;
 
+            Polyvalent.log(" - Handling block " + block_id + " with " + amount_of_states + " states");
+
             for (int i = 0; i < amount_of_states; i++) {
                 int client_raw_id = start_id + i;
                 String client_name = "Block{" + block_id + "}";
                 nonce_nr++;
 
-                if (client_name.equals("Block{polyvalent:slab}")) {
+                if (client_name.startsWith("Block{polyvalent:slab")) {
                     String nonce_name = client_name + "[nonce=" + nonce_nr + ",";
                     String type_name;
 

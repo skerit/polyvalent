@@ -33,14 +33,7 @@ public class PropertyRetainingUnusedBlocksStatePoly implements BlockPoly {
 
     private static final BiConsumer<Block,PolyRegistry> DEFAULT_ON_FIRST_REGISTER = (block, polyRegistry) -> polyRegistry.registerBlockPoly(block, new SimpleReplacementPoly(block.getDefaultState()));
 
-    /**
-     * @param  moddedBlock  the block this poly represents
-     * @param  registry     registry used to register this poly
-     * @param  properties  The properties that should be retained
-     * @throws BlockStateManager.StateLimitReachedException when the clientSideBlock doesn't have any more BlockStates left.
-     */
-    public PropertyRetainingUnusedBlocksStatePoly(Block moddedBlock, PolyRegistry registry, Block replacementBlock, Property<?>[] properties) throws BlockStateManager.StateLimitReachedException {
-
+    public PropertyRetainingUnusedBlocksStatePoly(Block moddedBlock, PolyRegistry registry, Block[] replacementBlocks, Property<?>[] properties) throws BlockStateManager.StateLimitReachedException {
         // Get the default blockstate values for the properties we want to retain
         Object[] defaultValues = new Object[properties.length];
         int i = -1;
@@ -49,7 +42,7 @@ public class PropertyRetainingUnusedBlocksStatePoly implements BlockPoly {
             defaultValues[i] = (moddedBlock.getDefaultState().get(p));
         }
 
-        stateProfile = new BlockStateProfile("temp", replacementBlock, blockState -> {
+        stateProfile = new BlockStateProfile("temp", replacementBlocks, blockState -> {
 
             boolean result = true;
 
@@ -88,6 +81,16 @@ public class PropertyRetainingUnusedBlocksStatePoly implements BlockPoly {
 
         states = getBlockStateMap(moddedBlock, registry, stateProfile, filterFunction);
         this.filter = filterFunction;
+    }
+
+    /**
+     * @param  moddedBlock  the block this poly represents
+     * @param  registry     registry used to register this poly
+     * @param  properties  The properties that should be retained
+     * @throws BlockStateManager.StateLimitReachedException when the clientSideBlock doesn't have any more BlockStates left.
+     */
+    public PropertyRetainingUnusedBlocksStatePoly(Block moddedBlock, PolyRegistry registry, Block replacementBlock, Property<?>[] properties) throws BlockStateManager.StateLimitReachedException {
+        this(moddedBlock, registry, new Block[]{replacementBlock}, properties);
     }
 
     @SuppressWarnings("unchecked")
