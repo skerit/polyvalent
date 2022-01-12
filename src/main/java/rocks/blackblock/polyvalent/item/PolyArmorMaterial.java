@@ -17,17 +17,17 @@ public class PolyArmorMaterial implements ArmorMaterial {
 
     @Override
     public int getDurability(EquipmentSlot slot) {
-        return (int) (Math.random() * 100);
+        return 50;
     }
 
     @Override
     public int getProtectionAmount(EquipmentSlot slot) {
-        return (int) (Math.random() * 100);
+        return 10;
     }
 
     @Override
     public int getEnchantability() {
-        return (int) (Math.random() * 100);
+        return 1;
     }
 
     @Override
@@ -47,11 +47,11 @@ public class PolyArmorMaterial implements ArmorMaterial {
 
     @Override
     public float getToughness() {
-        return (int) (Math.random() * 100);
+        return 3.0f;
     }
 
     @Override
     public float getKnockbackResistance() {
-        return (int) (Math.random() * 100);
+        return 0.0f;
     }
 }

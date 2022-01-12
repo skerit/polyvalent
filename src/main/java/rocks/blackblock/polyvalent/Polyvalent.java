@@ -17,11 +17,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import rocks.blackblock.polyvalent.block.*;
 import rocks.blackblock.polyvalent.item.PolyArmorItem;
+import rocks.blackblock.polyvalent.item.PolyBlockItem;
 import rocks.blackblock.polyvalent.networking.ModPacketsC2S;
+
+import java.util.HashMap;
 
 public class Polyvalent implements ModInitializer {
 
 	public static final String MC_NAMESPACE = "minecraft";
+
+	// Place to store all polyvalent items
+	public static final HashMap<Identifier, Item> ITEMS = new HashMap<>();
 
 	public static final boolean DETECTED_POLYMC = FabricLoader.getInstance().isModLoaded("polymc");
 
@@ -72,9 +78,20 @@ public class Polyvalent implements ModInitializer {
 	public static final PolySlabBlock[] SLAB_BLOCKS = {SLAB_BLOCK_ONE, SLAB_BLOCK_TWO, SLAB_BLOCK_THREE};
 	public static final PolyLeavesBlock[] LEAVES_BLOCKS = {LEAVES_BLOCK_ONE, LEAVES_BLOCK_TWO, LEAVES_BLOCK_THREE};
 
+	public static final PolyBlockItem BLOCK_ITEM = Polyvalent.registerItem("block_item", new PolyBlockItem(new Item.Settings()));
+
+	public static PacketByteBuf createPacketBuf() {
+		return buf(0);
+	}
+
 	public static PacketByteBuf buf(int version) {
 		var buf = new PacketByteBuf(Unpooled.buffer());
 		return buf.writeVarInt(version);
+	}
+
+	public static PacketByteBuf buf() {
+		var buf = new PacketByteBuf(Unpooled.buffer());
+		return buf;
 	}
 
 	public static Identifier id(String path) {
@@ -89,9 +106,9 @@ public class Polyvalent implements ModInitializer {
 	public void onInitialize() {
 
 		// Create 100 armor sets
-		/*for (int i = 1; i <= 100; i++) {
+		for (int i = 1; i <= 100; i++) {
 			PolyArmorItem.createSet(i);
-		}*/
+		}
 
 		// Create polyvalent blocks of each material
 		//PolyvalentBlock.createMaterialBlock("glass", Material.GLASS);
@@ -109,7 +126,9 @@ public class Polyvalent implements ModInitializer {
 	 * @param   item        The item instance to register
 	 */
 	public static <T extends Item> T registerItem(String item_name, T item) {
-		return Registry.register(Registry.ITEM, new Identifier(MOD_ID, item_name), item);
+		Identifier id = new Identifier(MOD_ID, item_name);
+		Polyvalent.ITEMS.put(id, item);
+		return Registry.register(Registry.ITEM, id, item);
 	}
 
 	/**

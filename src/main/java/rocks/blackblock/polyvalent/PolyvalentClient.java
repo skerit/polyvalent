@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.item.Item;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -15,6 +16,7 @@ import rocks.blackblock.polyvalent.networking.ModPacketsS2C;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class PolyvalentClient implements ClientModInitializer {
@@ -113,5 +115,26 @@ public class PolyvalentClient implements ClientModInitializer {
         }
 
         Polyvalent.log("Buffer is now: " + buffer.readableBytes() + " bytes");
+    }
+
+    /**
+     * Write all raw item ids and their state name to a PacketByteBuf buffer
+     */
+    public static void writeItemRawIds(PacketByteBuf buffer) {
+
+        // Write the amount of Polyvalent items to the buffer
+        buffer.writeVarInt(Polyvalent.ITEMS.size());
+
+        // Now iterate over them
+        for (Map.Entry<Identifier, Item> entry : Polyvalent.ITEMS.entrySet()) {
+            Identifier id = entry.getKey();
+            Item item = entry.getValue();
+
+            // Get the raw id this client uses to identify this item
+            int block_item_id = Item.getRawId(item);
+
+            buffer.writeString(id.toString());
+            buffer.writeVarInt(block_item_id);
+        }
     }
 }

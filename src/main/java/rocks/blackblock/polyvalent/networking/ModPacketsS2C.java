@@ -1,5 +1,6 @@
 package rocks.blackblock.polyvalent.networking;
 
+import io.netty.buffer.ByteBuf;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientLoginNetworking;
@@ -10,6 +11,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
@@ -44,75 +46,80 @@ public class ModPacketsS2C {
         }));
     }
 
-    private static void handleHandshakeVelocity(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
-        Polyvalent.log("Handshake through Velocity?");
-
-        PacketByteBuf buf = PacketByteBufs.create();
-        Polyvalent.log("Got Polyvalent handshake request");
-        buf.writeString("0.0.1");
-        PolyvalentClient.writeBlockStateRawIds(buf);
-        //return CompletableFuture.completedFuture(buf);
+    private static void handleIdMapVelocity(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf buf, PacketSender packetSender) {
+        handleIdMap(buf);
     }
 
-    private static void handleIdMapVelocity(MinecraftClient minecraftClient, ClientPlayNetworkHandler clientPlayNetworkHandler, PacketByteBuf buf, PacketSender packetSender) {
-        Polyvalent.log("Got Polyvalent id map: " + buf.readableBytes());
+    private static void handleIdMap(PacketByteBuf buf) {
+        Polyvalent.log("Got ID map of " + buf.readableBytes() + " bytes");
 
         PolyvalentClient.connectedToPolyvalentServer = true;
 
         // Remove all the old identifiers
         PolyvalentClient.actualBlockIdentifiers.clear();
 
+        // Get the version
         int version = buf.readVarInt();
-        int block_count = buf.readVarInt();
-        int byte_size = buf.readVarInt();
 
-        Polyvalent.log("Server is going to use " + block_count + " polyvalent blocks");
+        Polyvalent.log("Packet version: " + version);
 
-        for (int i = 0; i < block_count; i++) {
-            String block_name = buf.readString(1024);
-            int state_count = buf.readVarInt();
+        int block_byte_size = buf.readVarInt();
 
-            Identifier block_id = new Identifier(block_name);
+        Polyvalent.log("Block byte size: " + block_byte_size);
 
-            for (int j = 0; j < state_count; j++) {
-                int state_id = buf.readVarInt();
-                PolyvalentClient.actualBlockIdentifiers.put(state_id, block_id);
-                Polyvalent.log(" » " + block_name + ": " + state_id);
+        PacketByteBuf blocks = new PacketByteBuf(buf.readBytes(block_byte_size));
+
+        int block_count = blocks.readVarInt();
+        Polyvalent.log(" -- Server is going to use " + block_count + " polyvalent blocks");
+
+        try {
+
+            for (int i = 0; i < block_count; i++) {
+                String block_name = blocks.readString(1024);
+                int state_count = blocks.readVarInt();
+
+                Identifier block_id = new Identifier(block_name);
+
+                for (int j = 0; j < state_count; j++) {
+                    int state_id = blocks.readVarInt();
+                    PolyvalentClient.actualBlockIdentifiers.put(state_id, block_id);
+                    Polyvalent.log(" » " + block_name + ": " + state_id);
+                }
             }
+        } catch (Exception e) {
+            Polyvalent.log(" -- Error reading blocks from map: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        Polyvalent.log(" -- Reading items...");
+
+        try {
+            int byte_size_items = buf.readVarInt();
+
+            Polyvalent.log("Item byte size: " + byte_size_items);
+
+            PacketByteBuf items = new PacketByteBuf(buf.readBytes(byte_size_items));
+            int item_count = items.readVarInt();
+
+            Polyvalent.log(" -- Server is going to use " + item_count + " polyvalent items");
+
+            for (int i = 0; i < item_count; i++) {
+                NbtCompound nbt = items.readNbt();
+
+                Polyvalent.log(" »» Got NBT: " + nbt);
+            }
+
+        } catch (Exception e) {
+            Polyvalent.log(" -- Error reading items from map: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     private static CompletableFuture<PacketByteBuf> handleIdMap(MinecraftClient minecraftClient, ClientLoginNetworkHandler clientLoginNetworkHandler, PacketByteBuf buf, Consumer<GenericFutureListener<? extends Future<? super Void>>> genericFutureListenerConsumer) {
-        Polyvalent.log("Got Polyvalent id map: " + buf.readableBytes());
-
-        PolyvalentClient.connectedToPolyvalentServer = true;
-
-        // Remove all the old identifiers
-        PolyvalentClient.actualBlockIdentifiers.clear();
-
-        int version = buf.readVarInt();
-        int block_count = buf.readVarInt();
-        int byte_size = buf.readVarInt();
-
-        Polyvalent.log("Server is going to use " + block_count + " polyvalent blocks");
-
-        for (int i = 0; i < block_count; i++) {
-            String block_name = buf.readString(1024);
-            int state_count = buf.readVarInt();
-
-            Identifier block_id = new Identifier(block_name);
-
-            for (int j = 0; j < state_count; j++) {
-                int state_id = buf.readVarInt();
-                PolyvalentClient.actualBlockIdentifiers.put(state_id, block_id);
-                Polyvalent.log(" » " + block_name + ": " + state_id);
-            }
-        }
+        handleIdMap(buf);
 
         PacketByteBuf response_buf = PacketByteBufs.create();
         response_buf.writeBoolean(true);
-
-        Polyvalent.log("Read id map, sending response?");
 
         return CompletableFuture.completedFuture(response_buf);
     }
@@ -123,6 +130,7 @@ public class ModPacketsS2C {
         Polyvalent.log("Got Polyvalent handshake request");
         buf.writeString("0.0.1");
         PolyvalentClient.writeBlockStateRawIds(buf);
+        PolyvalentClient.writeItemRawIds(buf);
         return CompletableFuture.completedFuture(buf);
     }
 

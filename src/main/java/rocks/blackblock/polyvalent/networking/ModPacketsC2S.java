@@ -1,13 +1,16 @@
 package rocks.blackblock.polyvalent.networking;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.networking.v1.*;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.model.user.User;
+import net.luckperms.api.model.user.UserManager;
+import net.luckperms.api.node.Node;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.item.ArmorItem;
+import net.minecraft.item.Item;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -21,6 +24,7 @@ import rocks.blackblock.polyvalent.polymc.PolyvalentMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Handle incoming client packets on the server-side
@@ -32,38 +36,19 @@ public class ModPacketsC2S {
      */
     public static void register() {
         ServerLoginConnectionEvents.QUERY_START.register(ModPacketsC2S::handshake);
-        //ServerPlayConnectionEvents.JOIN.register(ModPacketsC2S::sendIdMap);
         ServerLoginNetworking.registerGlobalReceiver(ModPackets.HANDSHAKE, ModPacketsC2S::handleHandshakeReply);
-
-        //ServerPlayNetworking.registerReceiver(ModPackets.ID_MAP, );
-        /*ServerPlayConnectionEvents.INIT.register((handler, server) -> {
-            ServerPlayNetworking.registerReceiver(handler, ModPackets.ID_MAP, ModPacketsC2S::handleIdMapRequest);
-        });*/
 
         ServerLoginNetworking.registerGlobalReceiver(ModPackets.ID_MAP, ModPacketsC2S::handleIdMapReply);
 
-        //ServerPlayNetworking.registerGlobalReceiver(ModPackets.ID_MAP, ModPacketsC2S::handleIdMapRequest);
     }
 
     private static void handleIdMapReply(MinecraftServer minecraftServer, ServerLoginNetworkHandler serverLoginNetworkHandler, boolean b, PacketByteBuf packetByteBuf, ServerLoginNetworking.LoginSynchronizer loginSynchronizer, PacketSender packetSender) {
         Polyvalent.log("Received id map reply?");
     }
 
-    private static void sendIdMap(ServerPlayNetworkHandler serverPlayNetworkHandler, PacketSender packetSender, MinecraftServer minecraftServer) {
-        Polyvalent.log("Sending id map?");
-
-        PolyvalentAttachments attachments = (PolyvalentAttachments) serverPlayNetworkHandler.connection;
-
-        if (attachments.getIsPolyvalent()) {
-            sendBlockIdMap(packetSender, attachments);
-        }
-    }
-
     private static void handleIdMapRequest(MinecraftServer minecraftServer, ServerPlayerEntity serverPlayerEntity, ServerPlayNetworkHandler serverPlayNetworkHandler, PacketByteBuf packetByteBuf, PacketSender packetSender) {
         Polyvalent.log("Received id map request");
-
     }
-
 
     private static void handleHandshakeReply(MinecraftServer minecraftServer, ServerLoginNetworkHandler serverLoginNetworkHandler, boolean understood, PacketByteBuf packetByteBuf, ServerLoginNetworking.LoginSynchronizer loginSynchronizer, PacketSender packetSender) {
         if (understood) {
@@ -73,7 +58,7 @@ public class ModPacketsC2S {
             // Get the `attachments` object
             PolyvalentAttachments attachments = (PolyvalentAttachments) serverLoginNetworkHandler.connection;
 
-            // Now that the handshake was understoof by the client, we can be sure it is a polyvalent client
+            // Now that the handshake was understood by the client, we can be sure it is a polyvalent client
             attachments.setIsPolyvalent(true);
 
             try {
@@ -82,7 +67,7 @@ public class ModPacketsC2S {
                 Polyvalent.log("Failed to read handshake packet: " + e.getMessage());
             }
 
-            sendBlockIdMap(packetSender, attachments);
+            sendIdMap(packetSender, attachments);
 
         } else {
             Polyvalent.log("Client joined without Polyvalent");
@@ -105,7 +90,53 @@ public class ModPacketsC2S {
         Polyvalent.log("The client has " + polyvalent_state_size + " polyvalent states");
 
         PolyvalentMap map = loadPolyvalentStates(polyvalent_state_size, buf);
+
+        int polyvalent_item_count;
+
+        try {
+            polyvalent_item_count = buf.readVarInt();
+        } catch (Exception e) {
+            polyvalent_item_count = 0;
+            Polyvalent.log("Failed to read polyvalent item count: " + e.getMessage());
+        }
+
+        Polyvalent.log("The client has " + polyvalent_item_count + " polyvalent items");
+
+        try {
+            loadPolyvalentItems(map, polyvalent_item_count, buf);
+        } catch (Exception e) {
+            Polyvalent.log("Failed to load Polyvalent items: " + e.getMessage());
+            e.printStackTrace();
+        }
+
         attachments.setPolyvalentMap(map);
+    }
+
+    /**
+     * Load the client-side Polyvalent state numbers into a map
+     *
+     * @param    map      The map to load into
+     * @param    amount   The amount of states to load from the buffer
+     * @param    buffer   The buffer to read from
+     *
+     * @return   The player-specific PolyvalentMap
+     */
+    private static PolyvalentMap loadPolyvalentItems(PolyvalentMap map, int amount, PacketByteBuf buffer) {
+
+        for (int i = 0; i < amount; i++) {
+            String item_id_string = buffer.readString(1024);
+            Identifier item_id = new Identifier(item_id_string);
+            int client_raw_id = buffer.readVarInt();
+
+            // And now get the raw id from the server
+            int server_raw_id = Item.getRawId(Registry.ITEM.get(item_id));
+
+            if (client_raw_id != server_raw_id) {
+                map.setServerToClientItemId(server_raw_id, client_raw_id);
+            }
+        }
+
+        return map;
     }
 
     /**
@@ -127,8 +158,6 @@ public class ModPacketsC2S {
             int amount_of_states = buffer.readVarInt();
             int start_id = buffer.readVarInt();
             int nonce_nr = -1;
-
-            Polyvalent.log(" - Handling block " + block_id + " with " + amount_of_states + " states");
 
             for (int i = 0; i < amount_of_states; i++) {
                 int client_raw_id = start_id + i;
@@ -191,9 +220,27 @@ public class ModPacketsC2S {
         return map;
     }
 
-    public static void sendBlockIdMap(PacketSender packetSender, PolyvalentAttachments attachments) {
+    public static void sendIdMap(PacketSender packetSender, PolyvalentAttachments attachments) {
 
-        PacketByteBuf id_buf = Polyvalent.buf(0);
+        PacketByteBuf result = Polyvalent.createPacketBuf();
+
+        PacketByteBuf blocks = getBlockIdMap(attachments);
+        result.writeVarInt(blocks.readableBytes());
+        result.writeBytes(blocks);
+
+        PacketByteBuf items = getItemMap(attachments);
+        result.writeVarInt(items.readableBytes());
+        result.writeBytes(items);
+
+        Polyvalent.log("Sending ID map to client: " + result.readableBytes() + " bytes");
+
+        //player_handler.sendPacket(new CustomPayloadS2CPacket(ServerPackets.BLOCK_ID_MAP_ID, buf));
+        packetSender.sendPacket(ModPackets.ID_MAP, result);
+    }
+
+    private static PacketByteBuf getBlockIdMap(PolyvalentAttachments attachments) {
+
+        PacketByteBuf id_buf = Polyvalent.buf();
 
         PolyvalentMap map = attachments.getPolyvalentMap();
         HashMap<Identifier, List<Integer>> block_map = new HashMap<>();
@@ -234,13 +281,50 @@ public class ModPacketsC2S {
             }
         }
 
-        PacketByteBuf buf = Polyvalent.buf(0);
+        Polyvalent.log("Sending " + block_count + " block ids");
+
+        PacketByteBuf buf = Polyvalent.buf();
         buf.writeVarInt(block_count);
         buf.writeBytes(id_buf);
 
-        Polyvalent.log("Sending map of " + block_count + " blocks, buffer size: " + buf.readableBytes());
+        return buf;
+    }
 
-        //player_handler.sendPacket(new CustomPayloadS2CPacket(ServerPackets.BLOCK_ID_MAP_ID, buf));
-        packetSender.sendPacket(ModPackets.ID_MAP, buf);
+    private static PacketByteBuf getItemMap(PolyvalentAttachments attachments) {
+
+        PacketByteBuf item_buf = Polyvalent.buf();
+        int nbt_count = 0;
+
+        PacketByteBuf items = Polyvalent.buf();
+
+        for (Item item : Registry.ITEM) {
+            Identifier id = Registry.ITEM.getId(item);
+
+            if (!Polyvalent.requiresPoly(id)) {
+                continue;
+            }
+
+            if (!(item instanceof ArmorItem armorItem)) {
+                continue;
+            }
+
+            int raw_client_id = attachments.getPolyvalentMap().getClientItemRawId(item, null);
+
+            NbtCompound nbt = new NbtCompound();
+            nbt.putInt("id", raw_client_id);
+            nbt.putInt("maxDamage", armorItem.getMaxDamage());
+            nbt.putInt("maxProtection", armorItem.getMaterial().getProtectionAmount(armorItem.getSlotType()));
+            nbt.putFloat("maxToughness", armorItem.getMaterial().getToughness());
+
+            nbt_count++;
+            items.writeNbt(nbt);
+        }
+
+        Polyvalent.log("Sending " + nbt_count + " item nbt");
+
+        item_buf.writeVarInt(nbt_count);
+        item_buf.writeBytes(items);
+
+        return item_buf;
     }
 }

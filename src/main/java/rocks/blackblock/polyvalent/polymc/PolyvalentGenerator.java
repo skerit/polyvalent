@@ -15,7 +15,7 @@ public class PolyvalentGenerator {
      * @param builder builder to add polys to
      */
     public static void generateMissing(PolyRegistry builder) {
-        generateMissingPolys(builder, Registry.ITEM, ItemPolyGenerator::addItemToBuilder, builder::hasItemPoly);
+        generateMissingPolys(builder, Registry.ITEM, PolyvalentItemPolyGenerator::addItemToBuilder, builder::hasItemPoly);
         generateMissingPolys(builder, Registry.BLOCK, PolyvalentBlockPolyGenerator::addBlockToBuilder, builder::hasBlockPoly);
         generateMissingPolys(builder, Registry.SCREEN_HANDLER, GuiGenerator::addGuiToBuilder, builder::hasGuiPoly);
         generateMissingPolys(builder, Registry.ENTITY_TYPE, EntityPolyGenerator::addEntityToBuilder, builder::hasEntityPoly);

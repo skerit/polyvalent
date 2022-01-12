@@ -1,7 +1,5 @@
 package rocks.blackblock.polyvalent.mixin;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -18,9 +16,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+import rocks.blackblock.polyvalent.item.PolyArmorItem;
 
 import java.util.List;
 
@@ -54,9 +52,22 @@ public abstract class ClientItemStackMixin {
 
         ItemStack stack = (ItemStack) (Object) this;
         NbtCompound nbt = stack.getNbt();
+        Item item = stack.getItem();
 
         if (this.isDamaged()) {
-            list.add(new TranslatableText("item.durability", this.getMaxDamage() - this.getDamage(), this.getMaxDamage()));
+            int maxDamage;
+            int damage;
+
+            // PolyArmorItems have the correct damage values in their itemstack nbt data
+            if (item instanceof PolyArmorItem armorItem && nbt.contains("maxDamage") && nbt.contains("originalDamage")) {
+                maxDamage = nbt.getInt("maxDamage");
+                damage = nbt.getInt("originalDamage");
+            } else {
+                maxDamage = this.getMaxDamage();
+                damage = this.getDamage();
+            }
+
+            list.add(new TranslatableText("item.durability", maxDamage - damage, maxDamage));
         }
 
         String item_id;

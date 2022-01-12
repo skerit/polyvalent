@@ -8,9 +8,15 @@ import io.github.theepicblock.polymc.impl.misc.logging.ErrorTrackerWrapper;
 import io.github.theepicblock.polymc.impl.misc.logging.SimpleLogger;
 import io.github.theepicblock.polymc.impl.resource.ResourcePackGenerator;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.loader.api.FabricLoader;
 import rocks.blackblock.polyvalent.PolyvalentServer;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -27,7 +33,20 @@ public class PolyvalentCommands {
                                         SimpleLogger commandSource = new CommandSourceLogger(context.getSource(), true);
                                         ErrorTrackerWrapper logger = new ErrorTrackerWrapper(PolyMc.LOGGER);
                                         try {
-                                            ResourcePackGenerator.generate(PolyvalentServer.getMainMap(), "resource", logger);
+                                            commandSource.info("Generating Polyvalent resource pack...");
+                                            ResourcePackGenerator.generate(PolyvalentServer.getMainMap(), "resource_polyvalent", logger);
+
+                                            commandSource.info("Generated Polyvalent resource pack. Zipping...");
+                                            compressGameMap("resource_polyvalent", "resource_polyvalent.zip");
+                                            commandSource.info("Zipped Polyvalent resource pack.");
+
+                                            commandSource.info("Generating PolyMC resource pack...");
+                                            ResourcePackGenerator.generate(PolyMc.getMainMap(), "resource_polymc", logger);
+
+                                            commandSource.info("Generated PolyMC resource pack. Zipping...");
+                                            compressGameMap("resource_polymc", "resource_polymc.zip");
+                                            commandSource.info("Zipped PolyMC resource pack.");
+
                                         } catch (Exception e) {
                                             commandSource.error("An error occurred whilst trying to generate the resource pack! Please check the console.");
                                             e.printStackTrace();
@@ -58,5 +77,43 @@ public class PolyvalentCommands {
                                     }))
                             ));
         });
+    }
+
+    public static void compressGameMap(String mapName, String outputName) {
+        Path gameDir = FabricLoader.getInstance().getGameDir();
+        Path resourcePath = gameDir.resolve(mapName).toAbsolutePath();
+
+        outputName = gameDir.resolve(outputName).toAbsolutePath().toString();
+
+        compress(resourcePath, outputName);
+    }
+
+    public static void compress(String sourcePath, String targetPath) {
+        final Path sourceDir = Paths.get(sourcePath);
+        compress(sourceDir, targetPath);
+    }
+
+    public static void compress(Path sourceDir, String targetPath) {
+        try {
+            final ZipOutputStream outputStream = new ZipOutputStream(new FileOutputStream(targetPath));
+            Files.walkFileTree(sourceDir, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) {
+                    try {
+                        Path targetFile = sourceDir.relativize(file);
+                        outputStream.putNextEntry(new ZipEntry(targetFile.toString()));
+                        byte[] bytes = Files.readAllBytes(file);
+                        outputStream.write(bytes, 0, bytes.length);
+                        outputStream.closeEntry();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

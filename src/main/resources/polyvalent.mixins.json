@@ -14,10 +14,10 @@
   ],
   "server": [
     "ClientConnectionMixin",
-    "PlayerManagerMixin",
     "PolyMcGeneratorMixin",
     "ServerPlayerEntityMixin",
-    "ServerStartMixin"
+    "ServerStartMixin",
+    "PlayerManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
