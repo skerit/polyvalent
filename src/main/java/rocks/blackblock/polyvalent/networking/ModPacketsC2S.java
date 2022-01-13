@@ -7,6 +7,7 @@ import net.luckperms.api.model.user.UserManager;
 import net.luckperms.api.node.Node;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NbtCompound;
@@ -35,9 +36,15 @@ public class ModPacketsC2S {
      * Register the packets
      */
     public static void register() {
+
+        // Return early if this code runs on a client
+        if (Polyvalent.isClient()) {
+            Polyvalent.log("Not registering packets on client");
+            return;
+        }
+
         ServerLoginConnectionEvents.QUERY_START.register(ModPacketsC2S::handshake);
         ServerLoginNetworking.registerGlobalReceiver(ModPackets.HANDSHAKE, ModPacketsC2S::handleHandshakeReply);
-
         ServerLoginNetworking.registerGlobalReceiver(ModPackets.ID_MAP, ModPacketsC2S::handleIdMapReply);
 
     }

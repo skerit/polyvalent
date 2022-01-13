@@ -8,6 +8,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.*;
 import net.minecraft.network.PacketByteBuf;
@@ -79,6 +80,21 @@ public class Polyvalent implements ModInitializer {
 	public static final PolyLeavesBlock[] LEAVES_BLOCKS = {LEAVES_BLOCK_ONE, LEAVES_BLOCK_TWO, LEAVES_BLOCK_THREE};
 
 	public static final PolyBlockItem BLOCK_ITEM = Polyvalent.registerItem("block_item", new PolyBlockItem(new Item.Settings()));
+
+	/**
+	 * See if the mod has been installed on a client
+	 */
+	public static boolean isClient() {
+		try {
+			if (MinecraftClient.getInstance() != null) {
+				return true;
+			}
+		} catch (NoClassDefFoundError e) {
+			return false;
+		}
+
+		return false;
+	}
 
 	public static PacketByteBuf createPacketBuf() {
 		return buf(0);

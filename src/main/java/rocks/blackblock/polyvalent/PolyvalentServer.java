@@ -1,14 +1,9 @@
 package rocks.blackblock.polyvalent;
 
-import io.github.theepicblock.polymc.api.PolyMap;
 import io.github.theepicblock.polymc.api.PolyMcEntrypoint;
-import io.github.theepicblock.polymc.api.PolyRegistry;
 import io.github.theepicblock.polymc.api.block.BlockStateProfile;
 import io.github.theepicblock.polymc.api.misc.PolyMapProvider;
-import io.github.theepicblock.polymc.impl.PolyMcCommands;
-import io.github.theepicblock.polymc.impl.generator.Generator;
 import net.fabricmc.api.DedicatedServerModInitializer;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -16,7 +11,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import rocks.blackblock.polyvalent.block.PolyvalentBlock;
 import rocks.blackblock.polyvalent.networking.PolyvalentAttachments;
-import rocks.blackblock.polyvalent.networking.TempPlayerLoginAttachments;
 import rocks.blackblock.polyvalent.polymc.PolyvalentGenerator;
 import rocks.blackblock.polyvalent.polymc.PolyvalentMap;
 import rocks.blackblock.polyvalent.polymc.PolyvalentRegistry;

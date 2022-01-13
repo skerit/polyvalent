@@ -40,7 +40,12 @@ public interface PolyvalentBlock {
      */
     static PolyFullBlock createMaterialBlock(String name, Material material) {
 
-        PolyFullBlock block = new PolyFullBlock(AbstractBlock.Settings.of(material));
+        AbstractBlock.Settings settings = AbstractBlock.Settings.of(material);
+
+        settings.requiresTool();
+        settings.strength(3.5f, 6.0f);
+
+        PolyFullBlock block = new PolyFullBlock(settings);
 
         Polyvalent.registerBlockAndItem(name, block);
 
@@ -65,6 +70,9 @@ public interface PolyvalentBlock {
             return true;
         });
 
+        settings.requiresTool();
+        settings.strength(3.5f, 6.0f);
+
         PolyFullBlock block = new PolyFullBlock(settings);
 
         Polyvalent.registerBlockAndItem(name, block);
@@ -86,6 +94,9 @@ public interface PolyvalentBlock {
                 .nonOpaque()
                 .blockVision(PolyvalentBlock::never)
                 .solidBlock(PolyvalentBlock::never);
+
+        settings.requiresTool();
+        settings.strength(2f, 6.0f);
 
         PolyTransparentBlock block = new PolyTransparentBlock(settings);
 
@@ -110,6 +121,9 @@ public interface PolyvalentBlock {
                 .sounds(BlockSoundGroup.GRASS)
                 .suffocates(PolyvalentBlock::never);
 
+        settings.requiresTool();
+        settings.strength(2f, 6.0f);
+
         PolyLeavesBlock block = new PolyLeavesBlock(settings);
 
         Polyvalent.registerBlockAndItem(name, block);
@@ -129,6 +143,9 @@ public interface PolyvalentBlock {
     static PolySlabBlock createSlabBlock(String name, Material material) {
 
         AbstractBlock.Settings settings = AbstractBlock.Settings.of(material);
+
+        settings.requiresTool();
+        settings.strength(3.5f, 6.0f);
 
         PolySlabBlock block = new PolySlabBlock(settings);
 
