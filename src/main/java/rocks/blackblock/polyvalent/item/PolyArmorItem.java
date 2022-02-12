@@ -1,7 +1,5 @@
 package rocks.blackblock.polyvalent.item;
 
-import io.github.theepicblock.polymc.api.PolyRegistry;
-import io.github.theepicblock.polymc.impl.poly.item.ArmorMaterialPoly;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ArmorMaterial;

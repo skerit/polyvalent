@@ -1,32 +1,38 @@
 package rocks.blackblock.polyvalent.polymc;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import io.github.theepicblock.polymc.api.PolyMap;
+import com.google.gson.JsonObject;
+import io.github.theepicblock.polymc.api.PolyMcEntrypoint;
+import io.github.theepicblock.polymc.api.SharedValuesKey;
 import io.github.theepicblock.polymc.api.block.BlockPoly;
 import io.github.theepicblock.polymc.api.entity.EntityPoly;
 import io.github.theepicblock.polymc.api.gui.GuiPoly;
 import io.github.theepicblock.polymc.api.item.ItemPoly;
 import io.github.theepicblock.polymc.api.item.ItemTransformer;
+import io.github.theepicblock.polymc.api.resource.PolyMcResourcePack;
 import io.github.theepicblock.polymc.impl.PolyMapImpl;
-import io.github.theepicblock.polymc.impl.poly.item.ArmorMaterialPoly;
+import io.github.theepicblock.polymc.impl.misc.logging.SimpleLogger;
+import io.github.theepicblock.polymc.impl.resource.ModdedResourceContainerImpl;
+import io.github.theepicblock.polymc.impl.resource.ResourcePackImplementation;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.JsonHelper;
 import org.jetbrains.annotations.Nullable;
-import rocks.blackblock.polyvalent.Polyvalent;
-import rocks.blackblock.polyvalent.block.PolyvalentBlock;
+import rocks.blackblock.polyvalent.item.PolyvalentArmorMaterialPoly;
 import rocks.blackblock.polyvalent.networking.TempPlayerLoginAttachments;
 
-import java.util.ArrayList;
+import java.io.FileWriter;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 public class PolyvalentMap extends PolyMapImpl {
 
@@ -35,7 +41,8 @@ public class PolyvalentMap extends PolyMapImpl {
     private final ImmutableMap<Block, BlockPoly> original_blockPolys;
     private final ImmutableMap<ScreenHandlerType<?>, GuiPoly> original_guiPolys;
     private final ImmutableMap<EntityType<?>, EntityPoly<?>> original_entityPolys;
-    private final ImmutableMap<ArmorMaterial, ArmorMaterialPoly> original_armorPolys;
+    private final ImmutableList<SharedValuesKey.ResourceContainer> original_sharedValueResources;
+    private final ImmutableMap<ArmorMaterial, PolyvalentArmorMaterialPoly> original_armorPolys;
 
     private ServerPlayerEntity player = null;
     private TempPlayerLoginAttachments attachments = null;
@@ -43,14 +50,22 @@ public class PolyvalentMap extends PolyMapImpl {
     private HashMap<Integer, Integer> server_to_client_item_ids = new HashMap<>();
     private HashMap<Integer, Integer> client_to_server_item_ids = new HashMap<>();
 
-    public PolyvalentMap(ImmutableMap<Item, ItemPoly> itemPolys, ItemTransformer[] globalItemPolys, ImmutableMap<Block, BlockPoly> blockPolys, ImmutableMap<ScreenHandlerType<?>, GuiPoly> guiPolys, ImmutableMap<EntityType<?>, EntityPoly<?>> entityPolys, ImmutableMap<ArmorMaterial, ArmorMaterialPoly> armorPolys) {
-        super(itemPolys, globalItemPolys, blockPolys, guiPolys, entityPolys, armorPolys);
+    public PolyvalentMap(ImmutableMap<Item, ItemPoly> itemPolys,
+                         ItemTransformer[] globalItemPolys,
+                         ImmutableMap<Block, BlockPoly> blockPolys,
+                         ImmutableMap<ScreenHandlerType<?>, GuiPoly> guiPolys,
+                         ImmutableMap<EntityType<?>, EntityPoly<?>> entityPolys,
+                         ImmutableList<SharedValuesKey.ResourceContainer> sharedValueResources,
+                         ImmutableMap<ArmorMaterial, PolyvalentArmorMaterialPoly> armorPolys
+    ) {
+        super(itemPolys, globalItemPolys, blockPolys, guiPolys, entityPolys, sharedValueResources);
         this.original_itemPolys = itemPolys;
         this.original_globalItemPolys = globalItemPolys;
         this.original_blockPolys = blockPolys;
         this.original_guiPolys = guiPolys;
         this.original_entityPolys = entityPolys;
         this.original_armorPolys = armorPolys;
+        this.original_sharedValueResources = sharedValueResources;
     }
 
     /**
@@ -107,14 +122,30 @@ public class PolyvalentMap extends PolyMapImpl {
 
     public PolyvalentMap createPlayerMap() {
 
-        PolyvalentMap map = new PolyvalentMap(this.original_itemPolys, this.original_globalItemPolys, this.original_blockPolys, this.original_guiPolys, this.original_entityPolys, this.original_armorPolys);
+        PolyvalentMap map = new PolyvalentMap(
+                this.original_itemPolys,
+                this.original_globalItemPolys,
+                this.original_blockPolys,
+                this.original_guiPolys,
+                this.original_entityPolys,
+                this.original_sharedValueResources,
+                this.original_armorPolys
+        );
 
         return map;
     }
 
     public PolyvalentMap createPlayerMap(ServerPlayerEntity player) {
 
-        PolyvalentMap map = new PolyvalentMap(this.original_itemPolys, this.original_globalItemPolys, this.original_blockPolys, this.original_guiPolys, this.original_entityPolys, this.original_armorPolys);
+        PolyvalentMap map = new PolyvalentMap(
+                this.original_itemPolys,
+                this.original_globalItemPolys,
+                this.original_blockPolys,
+                this.original_guiPolys,
+                this.original_entityPolys,
+                this.original_sharedValueResources,
+                this.original_armorPolys
+        );
         map.setPlayer(player);
 
         return map;
@@ -132,5 +163,95 @@ public class PolyvalentMap extends PolyMapImpl {
     public void setPlayer(ServerPlayerEntity player) {
         this.player = player;
         this.attachments = (TempPlayerLoginAttachments) player;
+    }
+
+    @Override
+    public @Nullable PolyMcResourcePack generateResourcePack(SimpleLogger logger) {
+        var moddedResources = new ModdedResourceContainerImpl();
+        var pack = new PolyvalentResourcePack();
+
+        //Let mods register resources via the api
+        List<PolyMcEntrypoint> entrypoints = FabricLoader.getInstance().getEntrypoints("polymc", PolyMcEntrypoint.class);
+        for (PolyMcEntrypoint entrypointEntry : entrypoints) {
+            entrypointEntry.registerModSpecificResources(moddedResources, pack, logger);
+        }
+
+        // Hooks for all itempolys
+        this.original_itemPolys.forEach((item, itemPoly) -> {
+            try {
+                itemPoly.addToResourcePack(item, moddedResources, pack, logger);
+            } catch (Exception e) {
+                logger.warn("Exception whilst generating resources for " + item.getTranslationKey());
+                e.printStackTrace();
+            }
+        });
+
+        // Hooks for all blockpolys
+        this.original_blockPolys.forEach((block, blockPoly) -> {
+            try {
+                blockPoly.addToResourcePack(block, moddedResources, pack, logger);
+            } catch (Exception e) {
+                logger.warn("Exception whilst generating resources for " + block.getTranslationKey());
+                e.printStackTrace();
+            }
+        });
+
+        // Write the resources generated from shared values
+        this.original_sharedValueResources.forEach((sharedValueResourceContainer) -> {
+            try {
+                sharedValueResourceContainer.addToResourcePack(moddedResources, pack, logger);
+            } catch (Exception e) {
+                logger.warn("Exception whilst generating resources for shared values: " + sharedValueResourceContainer);
+                e.printStackTrace();
+            }
+        });
+
+        System.out.println(" -- ARMOR POLYS: " + this.original_armorPolys.size());
+
+        this.original_armorPolys.forEach((armor, armorPoly) -> {
+            try {
+                armorPoly.addToResourcePack(moddedResources, pack, logger);
+            } catch (Exception e) {
+                logger.warn("Exception whilst generating resources for armor: " + armor);
+                e.printStackTrace();
+            }
+        });
+
+        // Import the language files for all mods
+        var languageKeys = new HashMap<String,HashMap<String, String>>(); // The first hashmap is per-language. Then it's translationkey->translation
+        for (var lang : moddedResources.locateLanguageFiles()) {
+            // Ignore fapi
+            if (lang.getNamespace().equals("fabric")) continue;
+            for (var stream : moddedResources.getInputStreams(lang.getNamespace(), lang.getPath())) {
+                // Copy all of the language keys into the main map
+                var languageObject = pack.getGson().fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), JsonObject.class);
+                var mainLangMap = languageKeys.computeIfAbsent(lang.getPath(), (key) -> new HashMap<>());
+                languageObject.entrySet().forEach(entry -> mainLangMap.put(entry.getKey(), JsonHelper.asString(entry.getValue(), entry.getKey())));
+            }
+        }
+        // It doesn't actually matter which namespace the language files are under. We're just going to put them all under 'polymc-lang'
+        languageKeys.forEach((path, translations) -> {
+            pack.setAsset("polymc-lang", path, (location, gson) -> {
+                try (var writer = new FileWriter(location.toFile())) {
+                    gson.toJson(translations, writer);
+                }
+            });
+        });
+
+        // Import sounds
+        for (var namespace : moddedResources.getAllNamespaces()) {
+            var soundsRegistry = moddedResources.getSoundRegistry(namespace, "sounds.json");
+            if (soundsRegistry == null) continue;
+            pack.setSoundRegistry(namespace, "sounds.json", soundsRegistry);
+            pack.importRequirements(moddedResources, soundsRegistry, logger);
+        }
+
+        try {
+            moddedResources.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("Failed to close modded resources");
+        }
+        return pack;
     }
 }

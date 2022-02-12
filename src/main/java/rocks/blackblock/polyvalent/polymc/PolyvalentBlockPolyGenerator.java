@@ -6,34 +6,25 @@ import io.github.theepicblock.polymc.api.block.BlockPoly;
 import io.github.theepicblock.polymc.api.block.BlockStateManager;
 import io.github.theepicblock.polymc.api.block.BlockStateProfile;
 import io.github.theepicblock.polymc.impl.generator.BlockPolyGenerator;
-import io.github.theepicblock.polymc.impl.poly.block.PropertyFilteringUnusedBlocksStatePoly;
+import io.github.theepicblock.polymc.impl.misc.BooleanContainer;
+import io.github.theepicblock.polymc.impl.poly.block.FunctionBlockStatePoly;
 import io.github.theepicblock.polymc.impl.poly.block.SimpleReplacementPoly;
-import io.github.theepicblock.polymc.impl.poly.block.SingleUnusedBlockStatePoly;
-import io.github.theepicblock.polymc.impl.poly.block.UnusedBlockStatePoly;
 import net.minecraft.block.*;
-import net.minecraft.state.property.Properties;
-import net.minecraft.state.property.Property;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
-import rocks.blackblock.polyvalent.Polyvalent;
 import rocks.blackblock.polyvalent.PolyvalentServer;
-import rocks.blackblock.polyvalent.block.PolySlabBlock;
-import rocks.blackblock.polyvalent.block.PolyvalentBlock;
-
-import java.util.ArrayList;
 
 public class PolyvalentBlockPolyGenerator {
+
     /**
      * Generates the most suitable {@link BlockPoly} and directly adds it to the {@link PolyRegistry}
      * @see #generatePoly(Block, PolyRegistry)
      */
     public static void addBlockToBuilder(Block block, PolyRegistry builder) {
         try {
-            BlockPoly poly = generatePoly(block, builder);
-
-            builder.registerBlockPoly(block, poly);
+            builder.registerBlockPoly(block, generatePoly(block, builder));
         } catch (Exception e) {
             PolyMc.LOGGER.error("Failed to generate a poly for block " + block.getTranslationKey());
             e.printStackTrace();
@@ -45,9 +36,16 @@ public class PolyvalentBlockPolyGenerator {
     /**
      * Generates the most suitable {@link BlockPoly} for a given {@link Block}
      */
-    public static BlockPoly generatePoly(Block block, PolyRegistry builder) {
+    public static BlockPoly generatePoly(Block block, PolyRegistry registry) {
+        return new FunctionBlockStatePoly(block, (state, isUniqueCallback) -> registerClientState(state, isUniqueCallback, registry.getSharedValues(BlockStateManager.KEY)));
+    }
 
-        BlockState state = block.getDefaultState();
+    /**
+     * Generates the most suitable {@link BlockPoly} for a given {@link Block}
+     */
+    public static BlockState registerClientState(BlockState state, BooleanContainer isUniqueCallback, BlockStateManager manager) {
+
+        Block block = state.getBlock();
         Material material = null;
         BlockPolyGenerator.FakedWorld fakeWorld = new BlockPolyGenerator.FakedWorld(state);
 
@@ -70,20 +68,10 @@ public class PolyvalentBlockPolyGenerator {
         // === LEAVES ===
         if (block instanceof LeavesBlock || BlockTags.LEAVES.contains(block)) { //TODO I don't like that leaves can be set tags in datapacks, it might cause issues. However, as not every leaf block extends LeavesBlock I can't see much of a better option. Except to maybe check the id if it ends on "_leaves"
             try {
-                return new SingleUnusedBlockStatePoly(builder, PolyvalentServer.LEAVES_BLOCK_PROFILE);
+                isUniqueCallback.set(true);
+                return manager.requestBlockState(BlockStateProfile.LEAVES_PROFILE);
+                //return new SingleUnusedBlockStatePoly(builder, PolyvalentServer.LEAVES_BLOCK_PROFILE);
             } catch (BlockStateManager.StateLimitReachedException ignored) {}
-        }
-
-        if (block instanceof SlabBlock) {
-            try {
-                Property<?>[] properties = new Property[]{Properties.SLAB_TYPE, Properties.WATERLOGGED};
-
-                return new PropertyRetainingUnusedBlocksStatePoly(block, builder, Polyvalent.SLAB_BLOCKS, properties);
-            } catch (Exception e) {
-                // Ignore
-                System.out.println("Failed to generate a slab block " + e);
-                e.printStackTrace();
-            }
         }
 
         //=== FULL BLOCKS ===
@@ -91,7 +79,8 @@ public class PolyvalentBlockPolyGenerator {
 
             try {
                 if (state.hasEmissiveLighting(fakeWorld, BlockPos.ORIGIN)) {
-                    return new UnusedBlockStatePoly(block, builder, PolyvalentServer.GLOW_BLOCK_PROFILE);
+                    isUniqueCallback.set(true);
+                    return manager.requestBlockState(PolyvalentServer.GLOW_BLOCK_PROFILE);
                 }
             } catch (Exception e) {
                 // Ignore
@@ -99,7 +88,8 @@ public class PolyvalentBlockPolyGenerator {
 
             try {
                 if (!state.isOpaque()) {
-                    return new UnusedBlockStatePoly(block, builder, PolyvalentServer.GLASS_BLOCK_PROFILE);
+                    isUniqueCallback.set(true);
+                    return manager.requestBlockState(PolyvalentServer.GLASS_BLOCK_PROFILE);
                 }
             } catch (Exception e) {
                 // Ignore
@@ -107,7 +97,8 @@ public class PolyvalentBlockPolyGenerator {
 
             try {
                 if (material.equals(Material.WOOD)) {
-                    return new UnusedBlockStatePoly(block, builder, PolyvalentServer.WOOD_BLOCK_PROFILE);
+                    isUniqueCallback.set(true);
+                    return manager.requestBlockState(PolyvalentServer.WOOD_BLOCK_PROFILE);
                 }
             } catch (Exception e) {
                 // Ignore
@@ -115,14 +106,16 @@ public class PolyvalentBlockPolyGenerator {
 
             try {
                 if (material.equals(Material.STONE)) {
-                    return new UnusedBlockStatePoly(block, builder, PolyvalentServer.STONE_BLOCK_PROFILE);
+                    isUniqueCallback.set(true);
+                    return manager.requestBlockState(PolyvalentServer.STONE_BLOCK_PROFILE);
                 }
             } catch (Exception e) {
                 // Ignore
             }
 
             try {
-                return new UnusedBlockStatePoly(block, builder, PolyvalentServer.STONE_BLOCK_PROFILE);
+                isUniqueCallback.set(true);
+                return manager.requestBlockState(PolyvalentServer.STONE_BLOCK_PROFILE);
             } catch (BlockStateManager.StateLimitReachedException ignored) {
                 System.out.println("Failed to generate a polyvalent block " + ignored);
             } catch (Exception e) {
@@ -132,6 +125,6 @@ public class PolyvalentBlockPolyGenerator {
         }
 
         // Fallback!
-        return BlockPolyGenerator.generatePoly(block, builder);
+        return BlockPolyGenerator.registerClientState(state, isUniqueCallback, manager);
     }
 }

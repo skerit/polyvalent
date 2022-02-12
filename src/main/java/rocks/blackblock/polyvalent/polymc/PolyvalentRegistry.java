@@ -1,8 +1,10 @@
 package rocks.blackblock.polyvalent.polymc;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import io.github.theepicblock.polymc.api.PolyMap;
 import io.github.theepicblock.polymc.api.PolyRegistry;
+import io.github.theepicblock.polymc.api.SharedValuesKey;
 import io.github.theepicblock.polymc.api.block.BlockPoly;
 import io.github.theepicblock.polymc.api.block.BlockStateManager;
 import io.github.theepicblock.polymc.api.entity.EntityPoly;
@@ -10,22 +12,19 @@ import io.github.theepicblock.polymc.api.gui.GuiPoly;
 import io.github.theepicblock.polymc.api.item.CustomModelDataManager;
 import io.github.theepicblock.polymc.api.item.ItemPoly;
 import io.github.theepicblock.polymc.api.item.ItemTransformer;
-import io.github.theepicblock.polymc.impl.PolyMapImpl;
-import io.github.theepicblock.polymc.impl.poly.item.ArmorItemPoly;
-import io.github.theepicblock.polymc.impl.poly.item.ArmorMaterialPoly;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandlerType;
+import rocks.blackblock.polyvalent.item.PolyvalentArmorMaterialPoly;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PolyvalentRegistry extends PolyRegistry {
+    private final Map<SharedValuesKey<Object>, Object> sharedValues = new HashMap<>();
 
     private final CustomModelDataManager CMDManager = new CustomModelDataManager();
     private final BlockStateManager blockStateManager = new BlockStateManager(this);
@@ -35,7 +34,7 @@ public class PolyvalentRegistry extends PolyRegistry {
     private final Map<Block, BlockPoly> blockPolys = new HashMap<>();
     private final Map<ScreenHandlerType<?>, GuiPoly> guiPolys = new HashMap<>();
     private final Map<EntityType<?>, EntityPoly<?>> entityPolys = new HashMap<>();
-    private final Map<ArmorMaterial, ArmorMaterialPoly> armorPolys = new HashMap<>();
+    private final Map<ArmorMaterial, PolyvalentArmorMaterialPoly> armorPolys = new HashMap<>();
 
     /**
      * Register a poly for an item.
@@ -138,14 +137,14 @@ public class PolyvalentRegistry extends PolyRegistry {
      * @param material  material to associate poly with
      * @param itemPoly  The ArmorItemPoly to register for. An ArmorMaterialPoly will be created.
      */
-    public ArmorMaterialPoly registerArmorMaterialPoly(ArmorMaterial material, ArmorItemPoly itemPoly) {
+    public PolyvalentArmorMaterialPoly registerArmorMaterialPoly(ArmorMaterial material, PolyvalentArmorItemPoly itemPoly) {
 
-        ArmorMaterialPoly armorMaterialPoly;
+        PolyvalentArmorMaterialPoly armorMaterialPoly;
 
         if (armorPolys.containsKey(material)) {
             armorMaterialPoly = armorPolys.get(material);
         } else {
-            armorMaterialPoly = new ArmorMaterialPoly(material);
+            armorMaterialPoly = new PolyvalentArmorMaterialPoly(material);
             this.registerArmorMaterialPoly(material, armorMaterialPoly);
         }
 
@@ -157,9 +156,9 @@ public class PolyvalentRegistry extends PolyRegistry {
      * @param material           material to associate poly with
      * @param armorMaterialPoly  poly to register
      */
-    public ArmorMaterialPoly registerArmorMaterialPoly(ArmorMaterial material, ArmorMaterialPoly armorMaterialPoly) {
+    public PolyvalentArmorMaterialPoly registerArmorMaterialPoly(ArmorMaterial material, PolyvalentArmorMaterialPoly armorMaterialPoly) {
 
-        ArmorMaterialPoly existingPoly = armorPolys.get(material);
+        PolyvalentArmorMaterialPoly existingPoly = armorPolys.get(material);
         Integer color = null;
         Integer number = null;
 
@@ -171,11 +170,11 @@ public class PolyvalentRegistry extends PolyRegistry {
             color = 0xFFFFFF - number * 2;
         } else {
             number = existingPoly.getNumber();
-            color = existingPoly.getColorId();
+            //color = existingPoly.getColorId();
         }
 
         armorMaterialPoly.setNumber(number);
-        armorMaterialPoly.setColorId(color);
+        //armorMaterialPoly.setColorId(color);
 
         return armorMaterialPoly;
     }
@@ -194,8 +193,12 @@ public class PolyvalentRegistry extends PolyRegistry {
      * @param material armor material type to check.
      * @return True if a {@link ArmorItemPoly} exists for the given material.
      */
-    public ArmorMaterialPoly getArmorMaterialPoly(ArmorMaterial material) {
+    public PolyvalentArmorMaterialPoly getArmorMaterialPoly(ArmorMaterial material) {
         return armorPolys.get(material);
+    }
+
+    public <T> T getSharedValues(SharedValuesKey<T> key) {
+        return (T)sharedValues.computeIfAbsent((SharedValuesKey<Object>)key, (key0) -> key0.createNew(this));
     }
 
     /**
@@ -208,6 +211,7 @@ public class PolyvalentRegistry extends PolyRegistry {
                 ImmutableMap.copyOf(blockPolys),
                 ImmutableMap.copyOf(guiPolys),
                 ImmutableMap.copyOf(entityPolys),
+                ImmutableList.copyOf(sharedValues.entrySet().stream().map((entry) -> entry.getKey().createResources(entry.getValue())).filter(Objects::nonNull).iterator()),
                 ImmutableMap.copyOf(armorPolys));
     }
 
