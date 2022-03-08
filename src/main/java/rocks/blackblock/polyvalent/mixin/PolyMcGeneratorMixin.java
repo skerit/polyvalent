@@ -31,7 +31,7 @@ public class PolyMcGeneratorMixin {
 
     private static <T> void generateMissingPolysWithoutPolyvalent(PolyRegistry builder, Registry<T> registry, BiConsumer<T, PolyRegistry> generator, PolyvalentGenerator.BooleanFunction<T> contains) {
 
-        registry.getEntries()
+        registry.getEntrySet()
                 .stream()
                 .filter(entry -> !Util.isVanilla(entry.getKey().getValue()))
                 .filter(entry -> !contains.accept(entry.getValue()))
