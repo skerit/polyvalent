@@ -4,13 +4,14 @@ import io.github.theepicblock.polymc.api.block.BlockStateProfile;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.*;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -23,16 +24,29 @@ import rocks.blackblock.polyvalent.networking.ModPacketsC2S;
 
 import java.util.HashMap;
 
+/**
+ * The main Polyvalent class that's available on both the client and the server.
+ *
+ * @author   Jelle De Loecker   <jelle@elevenways.be>
+ * @since    0.1.0
+ */
 public class Polyvalent implements ModInitializer {
 
 	public static final String MC_NAMESPACE = "minecraft";
 
+	// The key PolyMC uses in NBT data
+	public static final String POLY_MC_ORIGINAL = "PolyMcOriginal";
+
 	// Place to store all polyvalent items
 	public static final HashMap<Identifier, Item> ITEMS = new HashMap<>();
 
+	// Is PolyMC loaded? (Can't do much without it)
 	public static final boolean DETECTED_POLYMC = FabricLoader.getInstance().isModLoaded("polymc");
 
+	// Get our own ModContainer instance
 	private static final ModContainer CONTAINER = FabricLoader.getInstance().getModContainer("polyvalent").get();
+
+	// Gather some mod metadata
 	public static final String MOD_ID = CONTAINER.getMetadata().getId();
 	public static final String NAME = CONTAINER.getMetadata().getName();
 	public static final String DESCRIPTION = CONTAINER.getMetadata().getDescription();
@@ -40,14 +54,10 @@ public class Polyvalent implements ModInitializer {
 
 	public static final boolean ENABLE_NETWORKING_CLIENT = true;
 
-
-	public final static Identifier CHANNEL_ID = new Identifier(MOD_ID,"enabled");
-
-	// This logger is used to write text to the console and the log file.
-	// It is considered best practice to use your mod id as the logger's name.
-	// That way, it's clear which mod wrote info, warnings, and errors.
+	// The logger polyvalent can use
 	public static final Logger LOGGER = LogManager.getLogger("polyvalent");
 
+	// All the available poly blocks
 	public static final PolyFullBlock WOOD_BLOCK_ONE = PolyvalentBlock.createMaterialBlock("wood_one", Material.WOOD);
 	public static final PolyFullBlock WOOD_BLOCK_TWO = PolyvalentBlock.createMaterialBlock("wood_two", Material.WOOD);
 
@@ -83,6 +93,9 @@ public class Polyvalent implements ModInitializer {
 
 	/**
 	 * See if the mod has been installed on a client
+	 *
+	 * @author   Jelle De Loecker   <jelle@elevenways.be>
+	 * @since    0.1.0
 	 */
 	public static boolean isClient() {
 		try {
@@ -96,43 +109,63 @@ public class Polyvalent implements ModInitializer {
 		return false;
 	}
 
+	/**
+	 * Create a new buffer with version 0
+	 *
+	 * @author   Jelle De Loecker   <jelle@elevenways.be>
+	 * @since    0.1.0
+	 */
 	public static PacketByteBuf createPacketBuf() {
 		return buf(0);
 	}
 
+	/**
+	 * Create a new buffer with the given version
+	 *
+	 * @author   Jelle De Loecker   <jelle@elevenways.be>
+	 * @since    0.1.0
+	 *
+	 * @param    version   The version of the buffer
+	 */
 	public static PacketByteBuf buf(int version) {
 		var buf = new PacketByteBuf(Unpooled.buffer());
 		return buf.writeVarInt(version);
 	}
 
+	/**
+	 * Create a totally empty buffer
+	 *
+	 * @author   Jelle De Loecker   <jelle@elevenways.be>
+	 * @since    0.1.0
+	 */
 	public static PacketByteBuf buf() {
-		var buf = new PacketByteBuf(Unpooled.buffer());
-		return buf;
+		return PacketByteBufs.create();
 	}
 
+	/**
+	 * Create a new identifier in our Polyvalent namespace
+	 *
+	 * @author   Jelle De Loecker   <jelle@elevenways.be>
+	 * @since    0.1.0
+	 *
+	 * @param    path   The path part of the identifier
+	 *
+	 * @return   The identifier, eg: "polyvalent:my_path"
+	 */
 	public static Identifier id(String path) {
 		return new Identifier(MOD_ID, path);
 	}
 
-	public static void log(Object o) {
-		LOGGER.info("[Polyvalent] " + o);
-	}
-
-	@Override
-	public void onInitialize() {
-
-		// Create 100 armor sets
-		for (int i = 1; i <= 100; i++) {
-			PolyArmorItem.createSet(i);
-		}
-
-		// Create polyvalent blocks of each material
-		//PolyvalentBlock.createMaterialBlock("glass", Material.GLASS);
-		//PolyvalentBlock.createMaterialBlock("leaves", Material.LEAVES);
-		//PolyvalentBlock.createMaterialBlock("soil", Material.SOIL);
-		//PolyvalentBlock.createMaterialBlock("water", Material.WATER);
-
-		ModPacketsC2S.register();
+	/**
+	 * Log a message to the console
+	 *
+	 * @author   Jelle De Loecker   <jelle@elevenways.be>
+	 * @since    0.1.0
+	 *
+	 * @param    obj   The object to log
+	 */
+	public static void log(Object obj) {
+		LOGGER.info("[Polyvalent] " + obj);
 	}
 
 	/**
@@ -176,7 +209,6 @@ public class Polyvalent implements ModInitializer {
 	 * @param   block        The block instance to register
 	 */
 	public static BlockItem registerBlockItem(String block_name, Block block) {
-
 		BlockItem block_item = new BlockItem(block, new FabricItemSettings());
 		BlockItem item = registerItem(block_name, block_item);
 		return item;
@@ -221,7 +253,6 @@ public class Polyvalent implements ModInitializer {
 		return !namespace.equals(MOD_ID);
 	}
 
-
 	/**
 	 * Returns true if this identifier is in the minecraft namespace
 	 */
@@ -235,5 +266,20 @@ public class Polyvalent implements ModInitializer {
 	 */
 	public static boolean isNamespaceVanilla(String v) {
 		return v.equals(MC_NAMESPACE);
+	}
+
+	/**
+	 * Initialize the mod
+	 *
+	 * @author   Jelle De Loecker   <jelle@elevenways.be>
+	 * @since    0.1.0
+	 */
+	@Override
+	public void onInitialize() {
+
+		// Create 100 armor sets
+		for (int i = 1; i <= 100; i++) {
+			PolyArmorItem.createSet(i);
+		}
 	}
 }

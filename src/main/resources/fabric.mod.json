@@ -44,6 +44,10 @@
   "custom": {
     "modmenu": {
       "badges": [ "library" ]
+    },
+    "waila:plugins": {
+      "id": "polyvalent:main",
+      "initializer": "rocks.blackblock.polyvalent.compat.WthitCompatibility"
     }
   }
 }

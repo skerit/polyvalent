@@ -17,6 +17,9 @@ repositories {
 		dirs '../PolyMc/build/libs/'
 	}
 
+	// WTHIT
+	maven { url "https://maven.bai.lol" }
+
 	mavenCentral()
 
 	// Add repositories to retrieve artifacts from in here.
@@ -37,6 +40,8 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 	modImplementation "com.github.TheEpicBlock:polymc:${project.polymc_version}"
+
+	modCompileOnly "mcp.mobius.waila:wthit-api:fabric-${wthit_version}"
 
 	compileOnly 'net.luckperms:api:5.3'
 }

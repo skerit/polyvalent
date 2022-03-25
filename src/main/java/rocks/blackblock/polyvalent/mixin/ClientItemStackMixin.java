@@ -18,14 +18,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+import rocks.blackblock.polyvalent.Polyvalent;
 import rocks.blackblock.polyvalent.item.PolyArmorItem;
 
 import java.util.List;
 
 @Mixin(ItemStack.class)
 public abstract class ClientItemStackMixin {
-
-    private static final String POLY_MC_ORIGINAL = "PolyMcOriginal";
 
     @Shadow public abstract boolean isDamaged();
 
@@ -72,8 +71,8 @@ public abstract class ClientItemStackMixin {
 
         String item_id;
 
-        if (nbt != null && nbt.contains(POLY_MC_ORIGINAL)) {
-            NbtCompound original = nbt.getCompound(POLY_MC_ORIGINAL);
+        if (nbt != null && nbt.contains(Polyvalent.POLY_MC_ORIGINAL)) {
+            NbtCompound original = nbt.getCompound(Polyvalent.POLY_MC_ORIGINAL);
             item_id = original.getString("id");
         } else {
             item_id = Registry.ITEM.getId(this.getItem()).toString();

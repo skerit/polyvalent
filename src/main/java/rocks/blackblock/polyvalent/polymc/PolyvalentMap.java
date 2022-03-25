@@ -23,12 +23,14 @@ import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.Item;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import org.jetbrains.annotations.Nullable;
 import rocks.blackblock.polyvalent.item.PolyvalentArmorMaterialPoly;
 import rocks.blackblock.polyvalent.networking.TempPlayerLoginAttachments;
 
 import java.io.FileWriter;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -218,15 +220,27 @@ public class PolyvalentMap extends PolyMapImpl {
         });
 
         // Import the language files for all mods
-        var languageKeys = new HashMap<String,HashMap<String, String>>(); // The first hashmap is per-language. Then it's translationkey->translation
-        for (var lang : moddedResources.locateLanguageFiles()) {
+        // The first hashmap is per-language. Then it's translationkey->translation
+        var languageKeys = new HashMap<String,HashMap<String, String>>();
+
+        for (Identifier mod_locales : moddedResources.locateLanguageFiles()) {
+
             // Ignore fapi
-            if (lang.getNamespace().equals("fabric")) continue;
-            for (var stream : moddedResources.getInputStreams(lang.getNamespace(), lang.getPath())) {
+            if (mod_locales.getNamespace().equals("fabric")) {
+                continue;
+            }
+
+            System.out.println("MOD LOCALES: " + mod_locales);
+
+            for (InputStream stream : moddedResources.getInputStreams(mod_locales.getNamespace(), mod_locales.getPath())) {
                 // Copy all of the language keys into the main map
-                var languageObject = pack.getGson().fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), JsonObject.class);
-                var mainLangMap = languageKeys.computeIfAbsent(lang.getPath(), (key) -> new HashMap<>());
+                JsonObject languageObject = pack.getGson().fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), JsonObject.class);
+
+                HashMap<String, String> mainLangMap = languageKeys.computeIfAbsent(mod_locales.getPath(), (key) -> new HashMap<>());
                 languageObject.entrySet().forEach(entry -> mainLangMap.put(entry.getKey(), JsonHelper.asString(entry.getValue(), entry.getKey())));
+
+                // Add block translations here
+
             }
         }
         // It doesn't actually matter which namespace the language files are under. We're just going to put them all under 'polymc-lang'

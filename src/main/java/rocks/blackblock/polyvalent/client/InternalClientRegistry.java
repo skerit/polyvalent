@@ -4,6 +4,12 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.world.chunk.ChunkStatus;
+import net.minecraft.world.chunk.WorldChunk;
 import org.jetbrains.annotations.ApiStatus;
 import rocks.blackblock.polyvalent.networking.ClientPackets;
 
@@ -34,5 +40,23 @@ public class InternalClientRegistry {
 
     public static int getProtocol(String identifier) {
         return CLIENT_PROTOCOL.getOrDefault(identifier, -1);
+    }
+
+    public static BlockState getBlockAt(BlockPos pos) {
+        if (MinecraftClient.getInstance().world != null) {
+            WorldChunk chunk = MinecraftClient.getInstance().world.getChunkManager().getChunk(
+                    ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()),
+                    ChunkStatus.FULL,
+                    true
+            );
+
+            if (chunk == null) {
+                return null;
+            }
+
+            return chunk.getBlockState(pos);
+        }
+
+        return null;
     }
 }
