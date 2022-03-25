@@ -8,7 +8,9 @@
         "StateMixin"
     ],
     "client": [
+        "MinecraftClientMixin",
         "ClientItemStackMixin",
+        "CreativeInventoryActionC2SPacketMixin",
         "DebugHudMixin",
         "ScreenMixin",
         "ServerCheckMixin"

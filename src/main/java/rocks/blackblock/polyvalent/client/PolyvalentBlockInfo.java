@@ -3,6 +3,10 @@ package rocks.blackblock.polyvalent.client;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.Style;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
 import net.minecraft.util.math.BlockPos;
@@ -84,6 +88,35 @@ public class PolyvalentBlockInfo {
         }
 
         return this.stack;
+    }
+
+    /**
+     * Get the client-side ItemStack representation of this block
+     *
+     * @author   Jelle De Loecker   <jelle@elevenways.be>
+     * @since    0.1.1
+     */
+    public ItemStack getItemStack(boolean for_creative) {
+
+        ItemStack stack = this.getItemStack();
+
+        if (stack == null) {
+            return null;
+        }
+
+        if (for_creative) {
+            NbtCompound nbt = stack.getOrCreateNbt();
+            NbtCompound polymc = new NbtCompound();
+            polymc.putString("id", this.identifier.toString());
+            polymc.putInt("Count", 1);
+            nbt.put(Polyvalent.POLY_MC_ORIGINAL, polymc);
+
+            TranslatableText title = new TranslatableText(this.getTranslationPath());
+            title.getWithStyle(Style.EMPTY.withItalic(false).withColor(Formatting.WHITE));
+            stack.setCustomName(title);
+        }
+
+        return stack;
     }
 
     /**
