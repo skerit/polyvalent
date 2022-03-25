@@ -41,6 +41,9 @@ public class PolyvalentItemInfo {
     // Is this a block item?
     public final boolean is_block_item;
 
+    // If it's a block item, which block is it for
+    private Identifier block_identifier = null;
+
     /**
      * Construct the PolyvalentItemInfo instance
      *
@@ -54,7 +57,12 @@ public class PolyvalentItemInfo {
         // The Polyvalent numerical type designation
         this.type_nr = data.getInt("t");
 
+        // Is this a block item?
         this.is_block_item = this.type_nr == 2;
+
+        if (this.is_block_item) {
+            this.block_identifier = Identifier.tryParse(data.getString("block"));
+        }
 
         // The raw client id
         this.raw_client_id = data.getInt("id");
@@ -116,6 +124,38 @@ public class PolyvalentItemInfo {
         }
 
         return PolyvalentClient.itemInfoById.get(identifier);
+    }
+
+    /**
+     * Get the block identifier, if it's a BlockItem
+     *
+     * @author   Jelle De Loecker   <jelle@elevenways.be>
+     * @since    0.1.1
+     */
+    public Identifier getBlockIdentifier() {
+        return this.block_identifier;
+    }
+
+    /**
+     * Try to get the block info
+     *
+     * @author   Jelle De Loecker   <jelle@elevenways.be>
+     * @since    0.1.1
+     */
+    public PolyvalentBlockInfo getBlockInfo() {
+
+        if (this.block_identifier == null) {
+            return null;
+        }
+
+        for (PolyvalentBlockInfo info : PolyvalentClient.blockInfo.values()) {
+
+            if (info.identifier.equals(this.block_identifier)) {
+                return info;
+            }
+        }
+
+        return null;
     }
 
     /**

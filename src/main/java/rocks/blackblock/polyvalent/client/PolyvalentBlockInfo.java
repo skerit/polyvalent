@@ -78,15 +78,22 @@ public class PolyvalentBlockInfo {
         if (this.stack == null) {
             PolyvalentItemInfo item_info = PolyvalentClient.itemInfoById.get(this.identifier);
 
-            Polyvalent.log("Item info of " + this.identifier + ": " + item_info);
-
             if (item_info != null) {
                 this.stack = item_info.getItemStack();
             }
         }
 
         return this.stack;
+    }
 
+    /**
+     * Get the default blockstate
+     *
+     * @author   Jelle De Loecker   <jelle@elevenways.be>
+     * @since    0.1.1
+     */
+    public BlockState getBlockState() {
+        return Block.STATE_IDS.get(this.state_id);
     }
 
     /**
