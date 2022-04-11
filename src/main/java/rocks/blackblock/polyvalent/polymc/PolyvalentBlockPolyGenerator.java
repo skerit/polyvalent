@@ -18,6 +18,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import rocks.blackblock.polyvalent.Polyvalent;
 import rocks.blackblock.polyvalent.PolyvalentServer;
+import rocks.blackblock.polyvalent.block.PolyPortalBlock;
 
 public class PolyvalentBlockPolyGenerator {
 
@@ -68,6 +69,32 @@ public class PolyvalentBlockPolyGenerator {
             PolyMc.LOGGER.warn("Failed to get material for " + block.getTranslationKey());
         }
 
+        if (material != null && material == Material.PORTAL) {
+            try {
+                isUniqueCallback.set(true);
+                return manager.requestBlockState(PolyvalentServer.PORTAL_PROFILE.and(
+                        state -> {
+
+                            // Get the polyblock's axis state
+                            Direction.Axis poly_axis = state.get(PolyPortalBlock.AXIS);
+                            Direction.Axis mod_axis = null;
+
+                            try {
+                                // Try to get the X-Y-Z axis
+                                mod_axis = moddedState.get(PolyPortalBlock.AXIS);
+                            } catch (Exception e) {
+                                // Ignore
+                            }
+
+                            if (mod_axis == null) {
+                                mod_axis = moddedState.get(PolyPortalBlock.HORIZONTAL_AXIS);
+                            }
+
+                            return poly_axis == mod_axis;
+                        }
+                ));
+            } catch (BlockStateManager.StateLimitReachedException ignored) {}
+        }
 
         //=== SLABS ===
         if (block instanceof SlabBlock) {

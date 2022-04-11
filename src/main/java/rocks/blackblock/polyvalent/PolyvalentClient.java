@@ -177,7 +177,8 @@ public class PolyvalentClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getTranslucent(),
                 Polyvalent.GLASS_BLOCK_ONE,
                 Polyvalent.GLASS_BLOCK_TWO,
-                Polyvalent.GLASS_BLOCK_THREE
+                Polyvalent.GLASS_BLOCK_THREE,
+                Polyvalent.PORTAL_BLOCK_ONE
         );
 
         // Register the Polyvalent blocks that have cutouts

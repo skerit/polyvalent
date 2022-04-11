@@ -131,7 +131,6 @@ public interface PolyvalentBlock {
         return block;
     }
 
-
     /**
      * Create a slab block and its item
      *
@@ -148,6 +147,29 @@ public interface PolyvalentBlock {
         settings.strength(3.5f, 6.0f);
 
         PolySlabBlock block = new PolySlabBlock(settings);
+
+        Polyvalent.registerBlockAndItem(name, block);
+
+        return block;
+    }
+
+    /**
+     * Create a portal block and its item
+     *
+     * @param name     The name of the block
+     * @param material The material of the block
+     *                 (e.g. Material.STONE)
+     *
+     */
+    static PolyPortalBlock createPortalBlock(String name, Material material) {
+
+        AbstractBlock.Settings settings = AbstractBlock.Settings.of(material);
+
+        settings.noCollision();
+        settings.strength(-1.0f);
+        settings.luminance(blockState -> 11);
+
+        PolyPortalBlock block = new PolyPortalBlock(settings);
 
         Polyvalent.registerBlockAndItem(name, block);
 

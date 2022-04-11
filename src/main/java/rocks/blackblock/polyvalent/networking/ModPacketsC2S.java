@@ -97,6 +97,7 @@ public class ModPacketsC2S {
             handleHandshakeBuffer(attachments, packetByteBuf);
         } catch (Exception e) {
             Polyvalent.log("Failed to read handshake packet: " + e.getMessage());
+            e.printStackTrace();
         }
 
         sendIdMap(packetSender, attachments);
@@ -120,7 +121,7 @@ public class ModPacketsC2S {
 
         int client_blockstate_count = buf.readVarInt();
 
-        Polyvalent.log("The client has " + client_blockstate_count + " polyvalent states");
+        Polyvalent.log("The client has " + client_blockstate_count + " polyvalent blockstates");
 
         // Read out the blockstates
         PolyvalentMap map = loadPolyvalentStates(client_blockstate_count, buf);
@@ -160,20 +161,26 @@ public class ModPacketsC2S {
 
         PolyvalentMap map = PolyvalentServer.getMainMap().createPlayerMap();
 
+        Polyvalent.log("Creating player specific map...");
+
         while (added < amount) {
             String block_id = buffer.readString(1024);
             int amount_of_states = buffer.readVarInt();
             int start_id = buffer.readVarInt();
             int nonce_nr = -1;
+            int state_nr = -1;
+
+            String client_name = "Block{" + block_id + "}";
 
             for (int i = 0; i < amount_of_states; i++) {
                 int client_raw_id = start_id + i;
-                String client_name = "Block{" + block_id + "}";
+                String type_name;
+
+                state_nr++;
                 nonce_nr++;
 
                 if (client_name.startsWith("Block{polyvalent:slab")) {
                     String nonce_name = client_name + "[nonce=" + nonce_nr + ",";
-                    String type_name;
 
                     // Decrease the loop counter by one, we'll increase it again later
                     i--;
@@ -208,12 +215,39 @@ public class ModPacketsC2S {
                             i++;
                         }
                     }
-                } else {
+                } else if (client_name.startsWith("Block{polyvalent:portal")) {
 
-                    client_name = client_name + "[nonce=" + i + "]";
+                    if (state_nr < 100) {
+                        type_name = client_name + "[axis=x,nonce=" + nonce_nr + "]";
+                    } else if (state_nr < 200) {
+                        type_name = client_name + "[axis=y,nonce=" + (nonce_nr-100) + "]";
+                    }else {
+                        type_name = client_name + "[axis=z,nonce=" + (nonce_nr-200) + "]";
+                    }
 
                     // And now get the raw id from the server
-                    int server_raw_id = PolyvalentServer.BLOCK_STATE_ID_MAP.get(client_name);
+                    Integer server_raw_id = PolyvalentServer.BLOCK_STATE_ID_MAP.get(type_name);
+
+                    if (server_raw_id == null) {
+                        Polyvalent.log("Failed to find server raw id for " + client_name);
+                        continue;
+                    }
+
+                    if (client_raw_id != server_raw_id) {
+                        map.setServerToClientId(server_raw_id, client_raw_id);
+                    }
+
+                } else {
+
+                    type_name = client_name + "[nonce=" + i + "]";
+
+                    // And now get the raw id from the server
+                    Integer server_raw_id = PolyvalentServer.BLOCK_STATE_ID_MAP.get(type_name);
+
+                    if (server_raw_id == null) {
+                        Polyvalent.log("Failed to find server raw id for " + type_name);
+                        continue;
+                    }
 
                     if (client_raw_id != server_raw_id) {
                         map.setServerToClientId(server_raw_id, client_raw_id);
@@ -275,6 +309,12 @@ public class ModPacketsC2S {
         PacketByteBuf result = Polyvalent.createPacketBuf();
 
         PacketByteBuf blocks = getBlockIdMap(attachments);
+
+        if (blocks == null) {
+            Polyvalent.log("Could not get block id map, not sending anything");
+            return;
+        }
+
         result.writeVarInt(blocks.readableBytes());
         result.writeBytes(blocks);
 
@@ -299,6 +339,10 @@ public class ModPacketsC2S {
         PacketByteBuf id_buf = Polyvalent.buf();
 
         PolyvalentMap map = attachments.getPolyvalentMap();
+
+        if (map == null) {
+            return null;
+        }
 
         int block_count = 0;
 
