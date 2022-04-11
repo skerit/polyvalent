@@ -10,10 +10,13 @@ import io.github.theepicblock.polymc.impl.misc.BooleanContainer;
 import io.github.theepicblock.polymc.impl.poly.block.FunctionBlockStatePoly;
 import io.github.theepicblock.polymc.impl.poly.block.SimpleReplacementPoly;
 import net.minecraft.block.*;
+import net.minecraft.state.property.Property;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
+import rocks.blackblock.polyvalent.Polyvalent;
 import rocks.blackblock.polyvalent.PolyvalentServer;
 
 public class PolyvalentBlockPolyGenerator {
@@ -43,16 +46,16 @@ public class PolyvalentBlockPolyGenerator {
     /**
      * Generates the most suitable {@link BlockPoly} for a given {@link Block}
      */
-    public static BlockState registerClientState(BlockState state, BooleanContainer isUniqueCallback, BlockStateManager manager) {
+    public static BlockState registerClientState(BlockState moddedState, BooleanContainer isUniqueCallback, BlockStateManager manager) {
 
-        Block block = state.getBlock();
+        Block block = moddedState.getBlock();
         Material material = null;
-        BlockPolyGenerator.FakedWorld fakeWorld = new BlockPolyGenerator.FakedWorld(state);
+        BlockPolyGenerator.FakedWorld fakeWorld = new BlockPolyGenerator.FakedWorld(moddedState);
 
         //Get the block's collision shape.
         VoxelShape collisionShape;
         try {
-            collisionShape = state.getCollisionShape(fakeWorld, BlockPos.ORIGIN);
+            collisionShape = moddedState.getCollisionShape(fakeWorld, BlockPos.ORIGIN);
         } catch (Exception e) {
             PolyMc.LOGGER.warn("Failed to get collision shape for " + block.getTranslationKey());
             e.printStackTrace();
@@ -60,13 +63,24 @@ public class PolyvalentBlockPolyGenerator {
         }
 
         try {
-            material = state.getMaterial();
+            material = moddedState.getMaterial();
         } catch (Exception e) {
             PolyMc.LOGGER.warn("Failed to get material for " + block.getTranslationKey());
         }
 
+
+        //=== SLABS ===
+        if (block instanceof SlabBlock) {
+            try {
+                isUniqueCallback.set(true);
+                return manager.requestBlockState(PolyvalentServer.SLAB_PROFILE.and(
+                        state -> propertyMatches(state, moddedState, SlabBlock.WATERLOGGED, SlabBlock.TYPE)
+                ));
+            } catch (BlockStateManager.StateLimitReachedException ignored) {}
+        }
+
         // === LEAVES ===
-        if (block instanceof LeavesBlock || state.isIn(BlockTags.LEAVES)) { //TODO I don't like that leaves can be set tags in datapacks, it might cause issues. However, as not every leaf block extends LeavesBlock I can't see much of a better option. Except to maybe check the id if it ends on "_leaves"
+        if (block instanceof LeavesBlock || moddedState.isIn(BlockTags.LEAVES)) { //TODO I don't like that leaves can be set tags in datapacks, it might cause issues. However, as not every leaf block extends LeavesBlock I can't see much of a better option. Except to maybe check the id if it ends on "_leaves"
             try {
                 isUniqueCallback.set(true);
                 return manager.requestBlockState(BlockStateProfile.LEAVES_PROFILE);
@@ -78,7 +92,7 @@ public class PolyvalentBlockPolyGenerator {
         if (Block.isShapeFullCube(collisionShape)) {
 
             try {
-                if (state.hasEmissiveLighting(fakeWorld, BlockPos.ORIGIN)) {
+                if (moddedState.hasEmissiveLighting(fakeWorld, BlockPos.ORIGIN)) {
                     isUniqueCallback.set(true);
                     return manager.requestBlockState(PolyvalentServer.GLOW_BLOCK_PROFILE);
                 }
@@ -87,7 +101,7 @@ public class PolyvalentBlockPolyGenerator {
             }
 
             try {
-                if (!state.isOpaque()) {
+                if (!moddedState.isOpaque()) {
                     isUniqueCallback.set(true);
                     return manager.requestBlockState(PolyvalentServer.GLASS_BLOCK_PROFILE);
                 }
@@ -125,6 +139,17 @@ public class PolyvalentBlockPolyGenerator {
         }
 
         // Fallback!
-        return BlockPolyGenerator.registerClientState(state, isUniqueCallback, manager);
+        return BlockPolyGenerator.registerClientState(moddedState, isUniqueCallback, manager);
+    }
+
+    public static boolean propertyMatches(BlockState a, BlockState b, Property<?>... properties) {
+        for (var property : properties) {
+            if (!propertyMatches(a, b, property)) return false;
+        }
+        return true;
+    }
+
+    public static <T extends Comparable<T>> boolean propertyMatches(BlockState a, BlockState b, Property<T> property) {
+        return a.get(property) == b.get(property);
     }
 }

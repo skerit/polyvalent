@@ -43,6 +43,7 @@ public class PolyvalentServer implements DedicatedServerModInitializer {
     public static final BlockStateProfile STONE_BLOCK_PROFILE = Polyvalent.createBlockStateProfile("stone_material_block", Polyvalent.STONE_BLOCKS);
     public static final BlockStateProfile GLASS_BLOCK_PROFILE = Polyvalent.createBlockStateProfile("glass_material_block", Polyvalent.GLASS_BLOCKS);
     public static final BlockStateProfile LEAVES_BLOCK_PROFILE = Polyvalent.createBlockStateProfile("leaves_block", Polyvalent.LEAVES_BLOCKS);
+    public static final BlockStateProfile SLAB_PROFILE = Polyvalent.createBlockStateProfile("slabs", Polyvalent.SLAB_BLOCKS);
 
     public static final HashMap<String, Integer> BLOCK_STATE_ID_MAP = new HashMap<>();
 

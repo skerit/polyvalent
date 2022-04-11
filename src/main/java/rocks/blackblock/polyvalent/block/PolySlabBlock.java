@@ -13,7 +13,7 @@ public class PolySlabBlock extends SlabBlock implements PolyvalentBlock {
 
     public PolySlabBlock(Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)this.getDefaultState().with(TYPE, SlabType.BOTTOM)).with(WATERLOGGED, false).with(NONCE, 0));
+        this.setDefaultState(this.getDefaultState().with(TYPE, SlabType.BOTTOM).with(WATERLOGGED, false).with(NONCE, 0));
     }
 
     @Override
