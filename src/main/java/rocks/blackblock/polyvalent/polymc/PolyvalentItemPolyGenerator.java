@@ -45,6 +45,11 @@ public class PolyvalentItemPolyGenerator {
         if (item.isFood()) {
             return new CustomModelDataPoly(cmdManager, item, CustomModelDataManager.FOOD_ITEMS);
         }
+
+        if (item instanceof PotionItem) {
+            return new CustomModelDataPoly(cmdManager, item, CustomModelDataManager.FOOD_ITEMS);
+        }
+
         if (item instanceof DyeableItem) {
             return new CustomModelDataPoly(cmdManager, item, Items.LEATHER_HORSE_ARMOR);
         }
