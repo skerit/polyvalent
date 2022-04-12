@@ -96,6 +96,28 @@ public class PolyvalentBlockPolyGenerator {
             } catch (BlockStateManager.StateLimitReachedException ignored) {}
         }
 
+        // Carpets
+        if (block instanceof CarpetBlock) {
+
+            if (collisionShape.isEmpty()) {
+                try {
+                    isUniqueCallback.set(true);
+                    return manager.requestBlockState(PolyvalentServer.NO_COLLISION_CARPET_PROFILE);
+                } catch (BlockStateManager.StateLimitReachedException ignored) {
+                    Polyvalent.log("Failed to register a carpet poly for " + block.getTranslationKey());
+                    ignored.printStackTrace();
+                }
+            } else {
+                try {
+                    isUniqueCallback.set(true);
+                    return manager.requestBlockState(PolyvalentServer.CARPET_PROFILE);
+                } catch (BlockStateManager.StateLimitReachedException ignored) {
+                    Polyvalent.log("Failed to register a carpet poly for " + block.getTranslationKey());
+                    ignored.printStackTrace();
+                }
+            }
+        }
+
         //=== SLABS ===
         if (block instanceof SlabBlock) {
             try {

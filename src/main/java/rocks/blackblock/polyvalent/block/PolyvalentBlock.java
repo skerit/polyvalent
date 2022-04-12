@@ -175,4 +175,47 @@ public interface PolyvalentBlock {
 
         return block;
     }
+
+    /**
+     * Create a carpet block and its item
+     *
+     * @param name     The name of the block
+     * @param material The material of the block
+     *                 (e.g. Material.STONE)
+     *
+     */
+    static PolyCarpetBlock createCarpetBlock(String name, Material material) {
+
+        AbstractBlock.Settings settings = AbstractBlock.Settings.of(material);
+
+        settings.strength(0.1f);
+
+        PolyCarpetBlock block = new PolyCarpetBlock(settings);
+
+        Polyvalent.registerBlockAndItem(name, block);
+
+        return block;
+    }
+
+    /**
+     * Create a non-collidable carpet block and its item
+     *
+     * @param name     The name of the block
+     * @param material The material of the block
+     *                 (e.g. Material.STONE)
+     *
+     */
+    static PolyCarpetBlock createNoCollisionCarpetBlock(String name, Material material) {
+
+        AbstractBlock.Settings settings = AbstractBlock.Settings.of(material);
+
+        settings.noCollision();
+        settings.strength(0.1f);
+
+        PolyCarpetBlock block = new PolyCarpetBlock(settings);
+
+        Polyvalent.registerBlockAndItem(name, block);
+
+        return block;
+    }
 }

@@ -84,6 +84,9 @@ public class Polyvalent implements ModInitializer {
 
 	public static final PolyPortalBlock PORTAL_BLOCK_ONE = PolyvalentBlock.createPortalBlock("portal_one", Material.PORTAL);
 
+	public static final PolyCarpetBlock CARPET_BLOCK_ONE = PolyvalentBlock.createCarpetBlock("carpet_one", Material.CARPET);
+	public static final PolyCarpetBlock NO_COLLISION_CARPET_BLOCK = PolyvalentBlock.createNoCollisionCarpetBlock("carpet_nc", Material.CARPET);
+
 	public static final PolyFullBlock[] WOOD_BLOCKS = {WOOD_BLOCK_ONE, WOOD_BLOCK_TWO};
 	public static final PolyFullBlock[] STONE_BLOCKS = {STONE_BLOCK_ONE, STONE_BLOCK_TWO, STONE_BLOCK_THREE, STONE_BLOCK_FOUR};
 	public static final PolyFullBlock[] GLOW_BLOCKS = {GLOW_BLOCK_ONE, GLOW_BLOCK_TWO, GLOW_BLOCK_THREE};
@@ -91,6 +94,8 @@ public class Polyvalent implements ModInitializer {
 	public static final PolySlabBlock[] SLAB_BLOCKS = {SLAB_BLOCK_ONE, SLAB_BLOCK_TWO, SLAB_BLOCK_THREE};
 	public static final PolyLeavesBlock[] LEAVES_BLOCKS = {LEAVES_BLOCK_ONE, LEAVES_BLOCK_TWO, LEAVES_BLOCK_THREE};
 	public static final PolyPortalBlock[] PORTAL_BLOCKS = {PORTAL_BLOCK_ONE};
+	public static final PolyCarpetBlock[] CARPET_BLOCKS = {CARPET_BLOCK_ONE};
+	public static final PolyCarpetBlock[] NO_COLLISION_CARPET_BLOCKS = {NO_COLLISION_CARPET_BLOCK};
 
 	public static final PolyBlockItem BLOCK_ITEM = Polyvalent.registerItem("block_item", new PolyBlockItem(new Item.Settings()));
 
