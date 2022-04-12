@@ -66,6 +66,8 @@ public class Polyvalent implements ModInitializer {
 	public static final PolyFullBlock STONE_BLOCK_THREE = PolyvalentBlock.createMaterialBlock("stone_three", Material.STONE);
 	public static final PolyFullBlock STONE_BLOCK_FOUR = PolyvalentBlock.createMaterialBlock("stone_four", Material.STONE);
 
+	public static final PolyFullBlock SOIL_BLOCK_ONE = PolyvalentBlock.createMaterialBlock("soil_one", Material.SOIL);
+
 	public static final PolyFullBlock GLOW_BLOCK_ONE = PolyvalentBlock.createGlowBlock("glow_one", Material.STONE);
 	public static final PolyFullBlock GLOW_BLOCK_TWO = PolyvalentBlock.createGlowBlock("glow_two", Material.STONE);
 	public static final PolyFullBlock GLOW_BLOCK_THREE = PolyvalentBlock.createGlowBlock("glow_three", Material.STONE);
@@ -93,6 +95,7 @@ public class Polyvalent implements ModInitializer {
 	public static final PolyTransparentBlock[] GLASS_BLOCKS = {GLASS_BLOCK_ONE, GLASS_BLOCK_TWO, GLASS_BLOCK_THREE};
 	public static final PolySlabBlock[] SLAB_BLOCKS = {SLAB_BLOCK_ONE, SLAB_BLOCK_TWO, SLAB_BLOCK_THREE};
 	public static final PolyLeavesBlock[] LEAVES_BLOCKS = {LEAVES_BLOCK_ONE, LEAVES_BLOCK_TWO, LEAVES_BLOCK_THREE};
+	public static final PolyFullBlock[] SOIL_BLOCKS = {SOIL_BLOCK_ONE};
 	public static final PolyPortalBlock[] PORTAL_BLOCKS = {PORTAL_BLOCK_ONE};
 	public static final PolyCarpetBlock[] CARPET_BLOCKS = {CARPET_BLOCK_ONE};
 	public static final PolyCarpetBlock[] NO_COLLISION_CARPET_BLOCKS = {NO_COLLISION_CARPET_BLOCK};

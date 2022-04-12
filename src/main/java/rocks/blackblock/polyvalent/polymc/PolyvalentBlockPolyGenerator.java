@@ -137,8 +137,8 @@ public class PolyvalentBlockPolyGenerator {
             } catch (BlockStateManager.StateLimitReachedException ignored) {}
         }
 
-        //=== FULL BLOCKS ===
-        if (Block.isShapeFullCube(collisionShape)) {
+        //=== FULL BLOCKS or blocks with a full top face ===
+        if (Block.isShapeFullCube(collisionShape) || Block.isFaceFullSquare(collisionShape, Direction.UP)) {
 
             try {
                 if (moddedState.hasEmissiveLighting(fakeWorld, BlockPos.ORIGIN)) {
@@ -156,6 +156,17 @@ public class PolyvalentBlockPolyGenerator {
                 }
             } catch (Exception e) {
                 // Ignore
+            }
+
+            try {
+                if (material.equals(Material.SOIL)) {
+                    isUniqueCallback.set(true);
+                    return manager.requestBlockState(PolyvalentServer.SOIL_BLOCK_PROFILE);
+                }
+            } catch (Exception e) {
+                // Ignore
+                Polyvalent.log("No soil");
+                e.printStackTrace();
             }
 
             try {
