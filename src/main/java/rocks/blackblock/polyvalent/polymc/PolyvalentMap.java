@@ -48,7 +48,13 @@ public class PolyvalentMap extends PolyMapImpl {
 
     private ServerPlayerEntity player = null;
     private TempPlayerLoginAttachments attachments = null;
+
+    // These are blockstate ids
     private HashMap<Integer, Integer> server_to_client_ids = new HashMap<>();
+
+    // These are block ids
+    private HashMap<Integer, Integer> server_to_client_block_ids = new HashMap<>();
+
     private HashMap<Integer, Integer> server_to_client_item_ids = new HashMap<>();
     private HashMap<Integer, Integer> client_to_server_item_ids = new HashMap<>();
 
@@ -87,6 +93,8 @@ public class PolyvalentMap extends PolyMapImpl {
             return state_id;
         }
 
+        int original_id = state_id;
+
         // If the state is different on the client, we need to use that id
         if (server_to_client_ids.containsKey(state_id)) {
             state_id = server_to_client_ids.get(state_id);
@@ -122,6 +130,19 @@ public class PolyvalentMap extends PolyMapImpl {
         return Item.byRawId(raw_id);
     }
 
+    /**
+     * Get the raw block id to send to the client
+     *
+     */
+    public int getClientBlockRawId(int raw_block_id) {
+
+        if (server_to_client_block_ids.containsKey(raw_block_id)) {
+            raw_block_id = server_to_client_block_ids.get(raw_block_id);
+        }
+
+        return raw_block_id;
+    }
+
     public PolyvalentMap createPlayerMap() {
 
         PolyvalentMap map = new PolyvalentMap(
@@ -151,6 +172,10 @@ public class PolyvalentMap extends PolyMapImpl {
         map.setPlayer(player);
 
         return map;
+    }
+
+    public void setServerToClientBlockId(int server_id, int client_id) {
+        server_to_client_block_ids.put(server_id, client_id);
     }
 
     public void setServerToClientId(int server_id, int client_id) {
@@ -227,6 +252,10 @@ public class PolyvalentMap extends PolyMapImpl {
 
             // Ignore fapi
             if (mod_locales.getNamespace().equals("fabric")) {
+                continue;
+            }
+
+            if (!mod_locales.getPath().contains("en_us")) {
                 continue;
             }
 

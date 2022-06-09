@@ -15,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -96,21 +97,35 @@ public class PolyvalentCommands {
     public static void compress(Path sourceDir, String targetPath) {
         try {
             final ZipOutputStream outputStream = new ZipOutputStream(new FileOutputStream(targetPath));
+
+            // Use a TreeSet to ensure the entries are sorted
+            TreeSet<Path> paths = new TreeSet<>();
+
             Files.walkFileTree(sourceDir, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) {
-                    try {
-                        Path targetFile = sourceDir.relativize(file);
-                        outputStream.putNextEntry(new ZipEntry(targetFile.toString()));
-                        byte[] bytes = Files.readAllBytes(file);
-                        outputStream.write(bytes, 0, bytes.length);
-                        outputStream.closeEntry();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    paths.add(file);
                     return FileVisitResult.CONTINUE;
                 }
             });
+
+            for (Path file : paths) {
+                try {
+                    Path targetFile = sourceDir.relativize(file);
+                    ZipEntry zip_entry = new ZipEntry(targetFile.toString());
+
+                    // Always set the time to 0 in order to produce identical zip files
+                    zip_entry.setTime(0);
+
+                    outputStream.putNextEntry(zip_entry);
+                    byte[] bytes = Files.readAllBytes(file);
+                    outputStream.write(bytes, 0, bytes.length);
+                    outputStream.closeEntry();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
             outputStream.close();
         } catch (IOException e) {
             e.printStackTrace();

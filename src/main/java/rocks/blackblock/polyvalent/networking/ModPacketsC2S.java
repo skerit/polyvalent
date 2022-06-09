@@ -4,6 +4,7 @@ import io.github.theepicblock.polymc.api.item.ItemPoly;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.networking.v1.*;
+import net.fabricmc.fabric.api.util.NbtType;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.model.user.UserManager;
@@ -15,7 +16,8 @@ import net.minecraft.item.ArmorItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.*;
+import net.minecraft.nbt.scanner.NbtCollector;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
@@ -258,6 +260,24 @@ public class ModPacketsC2S {
             added += amount_of_states;
         }
 
+        int block_ids = buffer.readInt();
+        added = 0;
+
+        while (added < block_ids) {
+            added++;
+            String block_id = buffer.readString(1024);
+            Identifier block_identifier = Identifier.tryParse(block_id);
+            int block_raw_id = buffer.readVarInt();
+
+            Block server_block = Registry.BLOCK.get(block_identifier);
+            int server_raw_id = Registry.BLOCK.getRawId(server_block);
+
+            if (server_raw_id != block_raw_id) {
+                map.setServerToClientBlockId(server_raw_id, block_raw_id);
+            }
+        }
+
+
         return map;
     }
 
@@ -337,6 +357,7 @@ public class ModPacketsC2S {
     private static PacketByteBuf getBlockIdMap(PolyvalentAttachments attachments) {
 
         PacketByteBuf id_buf = Polyvalent.buf();
+        PacketByteBuf nbt_buf = Polyvalent.buf();
 
         PolyvalentMap map = attachments.getPolyvalentMap();
 
@@ -368,20 +389,39 @@ public class ModPacketsC2S {
                 }
             }
 
+            NbtCompound bdata = new NbtCompound();
+
             // Only send blocks that have valid client-side states
             if (state_ids.size() > 0) {
                 block_count++;
+
+                bdata.putString("id", id.toString());
+                bdata.putInt("size", state_ids.size());
+
+                NbtList ids = new NbtList();
 
                 id_buf.writeString(id.toString());
                 id_buf.writeVarInt(state_ids.size());
 
                 for (Integer client_id : state_ids) {
                     id_buf.writeVarInt(client_id);
+                    //ids.add(new NbtInt(client_id));
+                    ids.add(NbtInt.of(client_id));
                 }
+
+                bdata.put("state_ids", ids);
+
+                BlockState default_state = block.getDefaultState();
+                int default_id = map.getClientStateRawId(default_state, null);
+                bdata.putInt("default_id", default_id);
+
+                nbt_buf.writeNbt(bdata);
             }
         }
 
         Polyvalent.log("Sending " + block_count + " block ids");
+        Polyvalent.log(" -- ID buf is " + id_buf.readableBytes() + " bytes long");
+        Polyvalent.log(" -- NBT buf is " + nbt_buf.readableBytes() + " bytes long");
 
         PacketByteBuf buf = Polyvalent.buf();
         buf.writeVarInt(block_count);

@@ -51,6 +51,12 @@ public abstract class ClientItemStackMixin {
 
         ItemStack stack = (ItemStack) (Object) this;
         NbtCompound nbt = stack.getNbt();
+
+        if (nbt != null && nbt.getBoolean(Polyvalent.HIDE_INFO)) {
+            cir.setReturnValue(list);
+            return;
+        }
+
         Item item = stack.getItem();
 
         if (this.isDamaged()) {

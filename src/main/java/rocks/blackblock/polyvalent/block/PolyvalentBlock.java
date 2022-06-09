@@ -218,4 +218,69 @@ public interface PolyvalentBlock {
 
         return block;
     }
+
+    /**
+     * Create a non-collidable transparent carpet block and its item
+     *
+     * @param name     The name of the block
+     * @param material The material of the block
+     *                 (e.g. Material.STONE)
+     *
+     */
+    static PolyCarpetBlock createNoCollisionTransparentCarpetBlock(String name, Material material) {
+
+        AbstractBlock.Settings settings = AbstractBlock.Settings.of(material);
+
+        settings.nonOpaque();
+        settings.noCollision();
+        settings.strength(0.1f);
+
+        PolyCarpetBlock block = new PolyCarpetBlock(settings);
+
+        Polyvalent.registerBlockAndItem(name, block);
+
+        return block;
+    }
+
+    /**
+     * Create a plant block
+     *
+     * @param name     The name of the block
+     *
+     */
+    static PolyPlantBlock createPlantBlock(String name) {
+
+        AbstractBlock.Settings settings = AbstractBlock.Settings.of(Material.PLANT);
+
+        settings.noCollision();
+        settings.breakInstantly();
+        settings.sounds(BlockSoundGroup.CAVE_VINES);
+
+        PolyPlantBlock block = new PolyPlantBlock(settings);
+
+        Polyvalent.registerBlockAndItem(name, block);
+
+        return block;
+    }
+
+    /**
+     * Create a sapling block
+     *
+     * @param name     The name of the block
+     *
+     */
+    static PolySaplingBlock createSaplingBlock(String name) {
+        AbstractBlock.Settings settings = AbstractBlock.Settings.of(Material.PLANT);
+
+        settings.noCollision();
+        settings.breakInstantly();
+        settings.sounds(BlockSoundGroup.GRASS);
+
+        PolySaplingBlock block = new PolySaplingBlock(settings);
+
+        Polyvalent.registerBlockAndItem(name, block);
+
+        return block;
+    }
+
 }

@@ -66,6 +66,11 @@ java {
 	withSourcesJar()
 }
 
+loom {
+
+	accessWidenerPath = file("src/main/resources/polyvalent.accesswidener")
+}
+
 jar {
 	from("LICENSE") {
 		rename { "${it}_${project.archivesBaseName}"}

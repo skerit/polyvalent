@@ -41,6 +41,7 @@ public class PolyvalentServer implements DedicatedServerModInitializer {
     public static final BlockStateProfile WOOD_BLOCK_PROFILE = Polyvalent.createBlockStateProfile("polyvalent_material_block", Polyvalent.WOOD_BLOCKS);
     public static final BlockStateProfile GLOW_BLOCK_PROFILE = Polyvalent.createBlockStateProfile("glow_material_block", Polyvalent.GLOW_BLOCKS);
     public static final BlockStateProfile STONE_BLOCK_PROFILE = Polyvalent.createBlockStateProfile("stone_material_block", Polyvalent.STONE_BLOCKS);
+    public static final BlockStateProfile CUTOUT_BLOCK_PROFILE = Polyvalent.createBlockStateProfile("cutout_block", Polyvalent.CUTOUT_BLOCKS);
     public static final BlockStateProfile GLASS_BLOCK_PROFILE = Polyvalent.createBlockStateProfile("glass_material_block", Polyvalent.GLASS_BLOCKS);
     public static final BlockStateProfile LEAVES_BLOCK_PROFILE = Polyvalent.createBlockStateProfile("leaves_block", Polyvalent.LEAVES_BLOCKS);
     public static final BlockStateProfile SOIL_BLOCK_PROFILE = Polyvalent.createBlockStateProfile("soil_block", Polyvalent.SOIL_BLOCKS);
@@ -48,6 +49,9 @@ public class PolyvalentServer implements DedicatedServerModInitializer {
     public static final BlockStateProfile PORTAL_PROFILE = Polyvalent.createBlockStateProfile("portals", Polyvalent.PORTAL_BLOCKS);
     public static final BlockStateProfile CARPET_PROFILE = Polyvalent.createBlockStateProfile("carpets", Polyvalent.CARPET_BLOCKS);
     public static final BlockStateProfile NO_COLLISION_CARPET_PROFILE = Polyvalent.createBlockStateProfile("carpets_nc", Polyvalent.NO_COLLISION_CARPET_BLOCKS);
+    public static final BlockStateProfile NO_COLLISION_TRANSPARENT_CARPET_PROFILE = Polyvalent.createBlockStateProfile("carpets_nct", Polyvalent.NO_COLLISION_TRANSPARENT_CARPET_BLOCKS);
+    public static final BlockStateProfile CLIMBABLE_PLANT_PROFILE = Polyvalent.createBlockStateProfile("climbable_plants", Polyvalent.CLIMBABLE_PLANT_BLOCKS);
+    public static final BlockStateProfile SAPLING_PROFILE = Polyvalent.createBlockStateProfile("saplings", Polyvalent.SAPLING_BLOCKS);
 
     public static final HashMap<String, Integer> BLOCK_STATE_ID_MAP = new HashMap<>();
 

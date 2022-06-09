@@ -1,0 +1,7 @@
+{
+    "variants": {
+        "": { "model": "polyvalent:block/default_transparent" },
+        "axis=z": { "model": "polyvalent:block/portal_ns" },
+        "axis=x": { "model": "polyvalent:block/portal_ew" }
+    }
+}

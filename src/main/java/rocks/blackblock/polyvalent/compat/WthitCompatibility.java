@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -70,9 +71,7 @@ public class WthitCompatibility implements IWailaPlugin {
             PolyvalentBlockInfo info = PolyvalentBlockInfo.getBlockInfoAt(accessor.getPosition());
 
             if (info != null) {
-                ItemStack stack = info.getItemStack();
-
-                Polyvalent.log("Got ItemStack: " + stack);
+                ItemStack stack = info.getItemStackForIcon();
 
                 if (stack != null) {
                     ItemComponent component = new ItemComponent(stack);
@@ -86,7 +85,6 @@ public class WthitCompatibility implements IWailaPlugin {
         @Override
         public void appendBody(ITooltip tooltip, IBlockAccessor accessor, IPluginConfig config) {
             if (config.getBoolean(BLOCK_STATES)) {
-                System.out.println("Show blockstates");
 
                 PolyvalentBlockInfo info = PolyvalentBlockInfo.getBlockInfoAt(accessor.getPosition());
 
@@ -169,6 +167,12 @@ public class WthitCompatibility implements IWailaPlugin {
             PolyvalentItemInfo info = PolyvalentItemInfo.of(stack);
 
             if (info == null) {
+                return null;
+            }
+
+            NbtCompound nbt = stack.getNbt();
+
+            if (nbt != null && nbt.getBoolean(Polyvalent.HIDE_INFO)) {
                 return null;
             }
 

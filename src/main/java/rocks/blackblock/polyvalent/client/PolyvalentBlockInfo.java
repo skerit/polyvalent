@@ -12,6 +12,7 @@ import net.minecraft.util.Language;
 import net.minecraft.util.math.BlockPos;
 import rocks.blackblock.polyvalent.Polyvalent;
 import rocks.blackblock.polyvalent.PolyvalentClient;
+import rocks.blackblock.polyvalent.utils.Translations;
 
 /**
  * Info on a Polyvalent block
@@ -32,6 +33,9 @@ public class PolyvalentBlockInfo {
 
     // The itemstack representation
     private ItemStack stack = null;
+
+    // The item info of this block
+    private PolyvalentItemInfo item_info = null;
 
     /**
      * Construct the PolyvalentBlockInfo instance
@@ -72,6 +76,35 @@ public class PolyvalentBlockInfo {
     }
 
     /**
+     * Get the client-side item info
+     *
+     * @author   Jelle De Loecker   <jelle@elevenways.be>
+     * @since    0.1.1
+     */
+    public PolyvalentItemInfo getItemInfo() {
+
+        if (this.item_info != null) {
+            return this.item_info;
+        }
+
+        PolyvalentItemInfo item_info = PolyvalentClient.itemInfoById.get(this.identifier);
+
+        // If the item info is not found, see if an alias item is defined in the translations
+        if (item_info == null) {
+            String key = "alias." + this.identifier.getNamespace() + "." + this.identifier.getPath();
+            String alias = Translations.getIfTranslated(key);
+
+            if (alias != null) {
+                item_info = PolyvalentClient.itemInfoById.get(Identifier.tryParse(alias));
+            }
+        }
+
+        this.item_info = item_info;
+
+        return this.item_info;
+    }
+
+    /**
      * Get the client-side ItemStack representation of this block
      *
      * @author   Jelle De Loecker   <jelle@elevenways.be>
@@ -79,12 +112,26 @@ public class PolyvalentBlockInfo {
      */
     public ItemStack getItemStack() {
 
-        if (this.stack == null) {
-            PolyvalentItemInfo item_info = PolyvalentClient.itemInfoById.get(this.identifier);
+        PolyvalentItemInfo item_info = this.getItemInfo();
 
-            if (item_info != null) {
-                this.stack = item_info.getItemStack();
-            }
+        if (item_info != null) {
+            return item_info.getItemStack();
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the client-side ItemStack representation of this block
+     * for use as an icon
+     *
+     * @author   Jelle De Loecker   <jelle@elevenways.be>
+     * @since    0.1.1
+     */
+    public ItemStack getItemStackForIcon() {
+
+        if (this.stack == null) {
+            this.stack = this.getItemStack();
         }
 
         return this.stack;
@@ -105,10 +152,11 @@ public class PolyvalentBlockInfo {
         }
 
         if (for_creative) {
+            stack.setCount(1);
             NbtCompound nbt = stack.getOrCreateNbt();
             NbtCompound polymc = new NbtCompound();
             polymc.putString("id", this.identifier.toString());
-            polymc.putInt("Count", 1);
+            polymc.putByte("Count", (byte) 1);
             nbt.put(Polyvalent.POLY_MC_ORIGINAL, polymc);
 
             TranslatableText title = new TranslatableText(this.getTranslationPath());

@@ -1,5 +1,5 @@
 {
   "variants": {
-    "": { "model": "polyvalent:block/default" }
+    "": { "model": "polyvalent:block/default_transparent" }
   }
 }

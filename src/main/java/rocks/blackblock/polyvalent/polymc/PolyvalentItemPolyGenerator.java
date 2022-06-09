@@ -28,7 +28,7 @@ public class PolyvalentItemPolyGenerator {
             return new DamageableItemPoly(cmdManager, item, Items.SHIELD);
         }
         if (item instanceof CompassItem) {
-            return new CustomModelDataPoly(cmdManager, item, Items.COMPASS);
+            return new CustomModelDataPoly(cmdManager, item, Polyvalent.COMPASS_ITEM);
         }
         if (item instanceof CrossbowItem) {
             return new DamageableItemPoly(cmdManager, item, Items.CROSSBOW);
@@ -47,7 +47,7 @@ public class PolyvalentItemPolyGenerator {
         }
 
         if (item instanceof PotionItem) {
-            return new CustomModelDataPoly(cmdManager, item, CustomModelDataManager.FOOD_ITEMS);
+            return new CustomModelDataPoly(cmdManager, item, Items.MILK_BUCKET);
         }
 
         if (item instanceof DyeableItem) {

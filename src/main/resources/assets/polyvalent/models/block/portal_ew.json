@@ -1,0 +1,7 @@
+{
+    "parent": "block/nether_portal_ew",
+    "textures": {
+        "particle": "polyvalent:block/default",
+        "portal": "polyvalent:block/default"
+    }
+}

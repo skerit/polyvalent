@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 import rocks.blackblock.polyvalent.block.*;
 import rocks.blackblock.polyvalent.item.PolyArmorItem;
 import rocks.blackblock.polyvalent.item.PolyBlockItem;
+import rocks.blackblock.polyvalent.item.PolyCompassItem;
 import rocks.blackblock.polyvalent.networking.ModPacketsC2S;
 
 import java.util.HashMap;
@@ -36,6 +37,8 @@ public class Polyvalent implements ModInitializer {
 
 	// The key PolyMC uses in NBT data
 	public static final String POLY_MC_ORIGINAL = "PolyMcOriginal";
+
+	public static final String HIDE_INFO = "polyvalent:hide_info";
 
 	// Place to store all polyvalent items
 	public static final HashMap<Identifier, Item> ITEMS = new HashMap<>();
@@ -72,6 +75,8 @@ public class Polyvalent implements ModInitializer {
 	public static final PolyFullBlock GLOW_BLOCK_TWO = PolyvalentBlock.createGlowBlock("glow_two", Material.STONE);
 	public static final PolyFullBlock GLOW_BLOCK_THREE = PolyvalentBlock.createGlowBlock("glow_three", Material.STONE);
 
+	public static final PolyTransparentBlock CUTOUT_BLOCK_ONE = PolyvalentBlock.createTransparentBlock("cutout_one", Material.STONE);
+
 	public static final PolyTransparentBlock GLASS_BLOCK_ONE = PolyvalentBlock.createTransparentBlock("glass_one", Material.GLASS);
 	public static final PolyTransparentBlock GLASS_BLOCK_TWO = PolyvalentBlock.createTransparentBlock("glass_two", Material.GLASS);
 	public static final PolyTransparentBlock GLASS_BLOCK_THREE = PolyvalentBlock.createTransparentBlock("glass_three", Material.GLASS);
@@ -79,6 +84,9 @@ public class Polyvalent implements ModInitializer {
 	public static final PolySlabBlock SLAB_BLOCK_ONE = PolyvalentBlock.createSlabBlock("slab_one", Material.STONE);
 	public static final PolySlabBlock SLAB_BLOCK_TWO = PolyvalentBlock.createSlabBlock("slab_two", Material.STONE);
 	public static final PolySlabBlock SLAB_BLOCK_THREE = PolyvalentBlock.createSlabBlock("slab_three", Material.STONE);
+
+	public static final PolyPlantBlock PLANT_CLIMBABLE_ONE = PolyvalentBlock.createPlantBlock("plant_climbable_one");
+	public static final PolySaplingBlock SAPLING_ONE = PolyvalentBlock.createSaplingBlock("sapling_one");
 
 	public static final PolyLeavesBlock LEAVES_BLOCK_ONE = PolyvalentBlock.createLeavesBlock("leaves_one", Material.LEAVES);
 	public static final PolyLeavesBlock LEAVES_BLOCK_TWO = PolyvalentBlock.createLeavesBlock("leaves_two", Material.LEAVES);
@@ -88,10 +96,12 @@ public class Polyvalent implements ModInitializer {
 
 	public static final PolyCarpetBlock CARPET_BLOCK_ONE = PolyvalentBlock.createCarpetBlock("carpet_one", Material.CARPET);
 	public static final PolyCarpetBlock NO_COLLISION_CARPET_BLOCK = PolyvalentBlock.createNoCollisionCarpetBlock("carpet_nc", Material.CARPET);
+	public static final PolyCarpetBlock NO_COLLISION_TRANSPARENT_CARPET_BLOCK = PolyvalentBlock.createNoCollisionTransparentCarpetBlock("carpet_nct", Material.CARPET);
 
 	public static final PolyFullBlock[] WOOD_BLOCKS = {WOOD_BLOCK_ONE, WOOD_BLOCK_TWO};
 	public static final PolyFullBlock[] STONE_BLOCKS = {STONE_BLOCK_ONE, STONE_BLOCK_TWO, STONE_BLOCK_THREE, STONE_BLOCK_FOUR};
 	public static final PolyFullBlock[] GLOW_BLOCKS = {GLOW_BLOCK_ONE, GLOW_BLOCK_TWO, GLOW_BLOCK_THREE};
+	public static final PolyTransparentBlock[] CUTOUT_BLOCKS = {CUTOUT_BLOCK_ONE, GLASS_BLOCK_ONE, GLASS_BLOCK_TWO, GLASS_BLOCK_THREE};
 	public static final PolyTransparentBlock[] GLASS_BLOCKS = {GLASS_BLOCK_ONE, GLASS_BLOCK_TWO, GLASS_BLOCK_THREE};
 	public static final PolySlabBlock[] SLAB_BLOCKS = {SLAB_BLOCK_ONE, SLAB_BLOCK_TWO, SLAB_BLOCK_THREE};
 	public static final PolyLeavesBlock[] LEAVES_BLOCKS = {LEAVES_BLOCK_ONE, LEAVES_BLOCK_TWO, LEAVES_BLOCK_THREE};
@@ -99,8 +109,12 @@ public class Polyvalent implements ModInitializer {
 	public static final PolyPortalBlock[] PORTAL_BLOCKS = {PORTAL_BLOCK_ONE};
 	public static final PolyCarpetBlock[] CARPET_BLOCKS = {CARPET_BLOCK_ONE};
 	public static final PolyCarpetBlock[] NO_COLLISION_CARPET_BLOCKS = {NO_COLLISION_CARPET_BLOCK};
+	public static final PolyCarpetBlock[] NO_COLLISION_TRANSPARENT_CARPET_BLOCKS = {NO_COLLISION_TRANSPARENT_CARPET_BLOCK};
+	public static final PolyPlantBlock[] CLIMBABLE_PLANT_BLOCKS = {PLANT_CLIMBABLE_ONE};
+	public static final PolySaplingBlock[] SAPLING_BLOCKS = {SAPLING_ONE};
 
 	public static final PolyBlockItem BLOCK_ITEM = Polyvalent.registerItem("block_item", new PolyBlockItem(new Item.Settings()));
+	public static final PolyCompassItem COMPASS_ITEM = Polyvalent.registerItem("compass", new PolyCompassItem(new Item.Settings()));
 
 	/**
 	 * See if the mod has been installed on a client

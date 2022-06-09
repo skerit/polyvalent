@@ -8,16 +8,17 @@
         "StateMixin"
     ],
     "client": [
-        "MinecraftClientMixin",
         "ClientItemStackMixin",
         "CreativeInventoryActionC2SPacketMixin",
         "DebugHudMixin",
+        "MinecraftClientMixin",
         "ScreenMixin",
         "ServerCheckMixin"
     ],
     "server": [
         "ClientConnectionMixin",
         "PlayerManagerMixin",
+        "PlayerManagerSyncTagsMixin",
         "PolyMcGeneratorMixin",
         "ServerPlayerEntityMixin",
         "ServerStartMixin"

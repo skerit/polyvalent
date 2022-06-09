@@ -195,11 +195,17 @@ public class PolyvalentItemInfo {
 
         if (poly_item != null) {
             ItemStack stack = new ItemStack(poly_item);
+            stack.setCount(1);
             NbtCompound nbt = stack.getOrCreateNbt();
 
             if (this.custom_model_data != null) {
                 nbt.putInt("CustomModelData", this.custom_model_data);
             }
+
+            NbtCompound original = new NbtCompound();
+            original.putString("id", this.identifier.toString());
+            original.putByte("Count", (byte) 1);
+            nbt.put(Polyvalent.POLY_MC_ORIGINAL, original);
 
             return stack;
         }

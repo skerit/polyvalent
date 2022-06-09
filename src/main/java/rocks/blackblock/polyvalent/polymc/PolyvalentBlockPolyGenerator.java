@@ -10,6 +10,7 @@ import io.github.theepicblock.polymc.impl.misc.BooleanContainer;
 import io.github.theepicblock.polymc.impl.poly.block.FunctionBlockStatePoly;
 import io.github.theepicblock.polymc.impl.poly.block.SimpleReplacementPoly;
 import net.minecraft.block.*;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -19,6 +20,8 @@ import net.minecraft.util.shape.VoxelShapes;
 import rocks.blackblock.polyvalent.Polyvalent;
 import rocks.blackblock.polyvalent.PolyvalentServer;
 import rocks.blackblock.polyvalent.block.PolyPortalBlock;
+
+import java.lang.reflect.Method;
 
 public class PolyvalentBlockPolyGenerator {
 
@@ -96,16 +99,42 @@ public class PolyvalentBlockPolyGenerator {
             } catch (BlockStateManager.StateLimitReachedException ignored) {}
         }
 
+        Boolean is_translucent = callBlockMethod(block, moddedState, "usesTranslucentRenderLayer");
+        Boolean is_cutout = callBlockMethod(block, moddedState, "usesTranslucentRenderLayer");
+        Boolean is_cutout_mipped = callBlockMethod(block, moddedState, "usesTranslucentRenderLayer");
+        Boolean is_solid = callBlockMethod(block, moddedState, "usesTranslucentRenderLayer");
+        boolean found_render_info = false;
+
+        if (is_translucent != null || is_cutout != null || is_cutout_mipped != null || is_solid != null) {
+            found_render_info = true;
+        }
+
+        is_translucent = is_translucent != null && is_translucent;
+        is_cutout = is_cutout != null && is_cutout;
+        is_cutout_mipped = is_cutout_mipped != null && is_cutout_mipped;
+        is_solid = is_solid != null && is_solid;
+
         // Carpets
         if (block instanceof CarpetBlock) {
 
             if (collisionShape.isEmpty()) {
-                try {
-                    isUniqueCallback.set(true);
-                    return manager.requestBlockState(PolyvalentServer.NO_COLLISION_CARPET_PROFILE);
-                } catch (BlockStateManager.StateLimitReachedException ignored) {
-                    Polyvalent.log("Failed to register a carpet poly for " + block.getTranslationKey());
-                    ignored.printStackTrace();
+
+                if (is_translucent) {
+                    try {
+                        isUniqueCallback.set(true);
+                        return manager.requestBlockState(PolyvalentServer.NO_COLLISION_TRANSPARENT_CARPET_PROFILE);
+                    } catch (BlockStateManager.StateLimitReachedException ignored) {
+                        Polyvalent.log("Failed to register a carpet poly for " + block.getTranslationKey());
+                        ignored.printStackTrace();
+                    }
+                } else {
+                    try {
+                        isUniqueCallback.set(true);
+                        return manager.requestBlockState(PolyvalentServer.NO_COLLISION_CARPET_PROFILE);
+                    } catch (BlockStateManager.StateLimitReachedException ignored) {
+                        Polyvalent.log("Failed to register a carpet poly for " + block.getTranslationKey());
+                        ignored.printStackTrace();
+                    }
                 }
             } else {
                 try {
@@ -116,6 +145,20 @@ public class PolyvalentBlockPolyGenerator {
                     ignored.printStackTrace();
                 }
             }
+        }
+
+        if (collisionShape.isEmpty()) {
+            try {
+                if (moddedState.isIn(BlockTags.CLIMBABLE)) {
+                    isUniqueCallback.set(true);
+                    return manager.requestBlockState(PolyvalentServer.CLIMBABLE_PLANT_PROFILE);
+                }
+            } catch (BlockStateManager.StateLimitReachedException ignored) {}
+
+            try {
+                isUniqueCallback.set(true);
+                return manager.requestBlockState(PolyvalentServer.SAPLING_PROFILE);
+            } catch (BlockStateManager.StateLimitReachedException ignored) {}
         }
 
         //=== SLABS ===
@@ -150,9 +193,18 @@ public class PolyvalentBlockPolyGenerator {
             }
 
             try {
-                if (!moddedState.isOpaque()) {
+                if (!moddedState.isOpaque() && is_translucent) {
                     isUniqueCallback.set(true);
                     return manager.requestBlockState(PolyvalentServer.GLASS_BLOCK_PROFILE);
+                }
+            } catch (Exception e) {
+                // Ignore
+            }
+
+            try {
+                if (!moddedState.isOpaque()) {
+                    isUniqueCallback.set(true);
+                    return manager.requestBlockState(PolyvalentServer.CUTOUT_BLOCK_PROFILE);
                 }
             } catch (Exception e) {
                 // Ignore
@@ -200,6 +252,18 @@ public class PolyvalentBlockPolyGenerator {
 
         // Fallback!
         return BlockPolyGenerator.registerClientState(moddedState, isUniqueCallback, manager);
+    }
+
+    public static Boolean callBlockMethod(Block block, BlockState state, String methodName) {
+
+        Class<? extends Block> block_class = block.getClass();
+
+        try {
+            Method method = block_class.getDeclaredMethod(methodName, BlockState.class);
+            return (Boolean) method.invoke(block, state);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public static boolean propertyMatches(BlockState a, BlockState b, Property<?>... properties) {
