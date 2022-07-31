@@ -82,10 +82,11 @@ public class PolyvalentMap extends PolyMapImpl {
      * @param   state         The block state to get the id of
      * @param   playerEntity  The player the id is for
      */
+    @Override
     public int getClientStateRawId(BlockState state, ServerPlayerEntity playerEntity) {
 
         // Get the state info as it is known to the server
-        BlockState clientState = this.getClientBlock(state);
+        BlockState clientState = this.getClientState(state, playerEntity);
         int state_id = Block.STATE_IDS.getRawId(clientState);
 
         // Don't lookup vanilla ids
@@ -275,9 +276,10 @@ public class PolyvalentMap extends PolyMapImpl {
         // It doesn't actually matter which namespace the language files are under. We're just going to put them all under 'polymc-lang'
         languageKeys.forEach((path, translations) -> {
             pack.setAsset("polymc-lang", path, (location, gson) -> {
-                try (var writer = new FileWriter(location.toFile())) {
+                location.write(gson.toJson(translations).getBytes(StandardCharsets.UTF_8));
+                /*try (var writer = new FileWriter(location.toFile())) {
                     gson.toJson(translations, writer);
-                }
+                }*/
             });
         });
 

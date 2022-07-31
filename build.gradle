@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.10-SNAPSHOT'
+	id 'fabric-loom' version '0.12-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -20,6 +20,13 @@ repositories {
 	// WTHIT
 	maven { url "https://maven.bai.lol" }
 
+	maven {
+		url "https://maven.nucleoid.xyz"
+		content {
+			includeGroup("xyz.nucleoid")
+		}
+	}
+
 	mavenCentral()
 
 	// Add repositories to retrieve artifacts from in here.
@@ -39,9 +46,11 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modImplementation "com.github.TheEpicBlock:polymc:${project.polymc_version}"
+	modImplementation "com.github.TheEpicBlock:PolyMc:${project.polymc_version}"
 
 	modCompileOnly "mcp.mobius.waila:wthit-api:fabric-${wthit_version}"
+
+	modImplementation include("xyz.nucleoid:packet-tweaker:${project.packet_tweaker_version}")
 
 	compileOnly 'net.luckperms:api:5.3'
 }

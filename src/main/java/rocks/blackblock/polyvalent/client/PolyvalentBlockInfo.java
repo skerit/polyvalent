@@ -4,8 +4,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
@@ -159,7 +160,7 @@ public class PolyvalentBlockInfo {
             polymc.putByte("Count", (byte) 1);
             nbt.put(Polyvalent.POLY_MC_ORIGINAL, polymc);
 
-            TranslatableText title = new TranslatableText(this.getTranslationPath());
+            MutableText title = Text.translatable(this.getTranslationPath());
             title.getWithStyle(Style.EMPTY.withItalic(false).withColor(Formatting.WHITE));
             stack.setCustomName(title);
         }

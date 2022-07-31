@@ -2,14 +2,11 @@ package rocks.blackblock.polyvalent.item;
 
 import io.github.theepicblock.polymc.api.resource.ModdedResources;
 import io.github.theepicblock.polymc.api.resource.PolyMcResourcePack;
-import io.github.theepicblock.polymc.api.resource.TextureAsset;
 import io.github.theepicblock.polymc.impl.misc.logging.SimpleLogger;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.util.Identifier;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 
 public class PolyvalentArmorMaterialPoly {
 
@@ -83,7 +80,7 @@ public class PolyvalentArmorMaterialPoly {
     private static void addToPack(PolyMcResourcePack pack, String path, byte[] data) {
 
         pack.setAsset("minecraft", path, (location, gson) -> {
-            Files.write(location, data);
+            location.write(data);
         });
 
     }

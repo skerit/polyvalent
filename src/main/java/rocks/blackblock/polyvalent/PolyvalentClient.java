@@ -293,7 +293,7 @@ public class PolyvalentClient implements ClientModInitializer {
 
             @Nullable
             private BlockPos getSpawnPos(ClientWorld world) {
-                return world.getDimension().isNatural() ? world.getSpawnPos() : null;
+                return world.getDimension().natural() ? world.getSpawnPos() : null;
             }
 
             @Nullable
@@ -301,6 +301,7 @@ public class PolyvalentClient implements ClientModInitializer {
                 Optional<RegistryKey<World>> optional;
                 boolean bl = nbt.contains("LodestonePos");
                 boolean bl2 = nbt.contains("LodestoneDimension");
+
                 if (bl && bl2 && (optional = CompassItem.getLodestoneDimension(nbt)).isPresent() && world.getRegistryKey() == optional.get()) {
                     return NbtHelper.toBlockPos(nbt.getCompound("LodestonePos"));
                 }

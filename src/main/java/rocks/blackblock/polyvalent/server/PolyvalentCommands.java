@@ -7,7 +7,7 @@ import io.github.theepicblock.polymc.impl.misc.logging.CommandSourceLogger;
 import io.github.theepicblock.polymc.impl.misc.logging.ErrorTrackerWrapper;
 import io.github.theepicblock.polymc.impl.misc.logging.SimpleLogger;
 import io.github.theepicblock.polymc.impl.resource.ResourcePackGenerator;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import rocks.blackblock.polyvalent.PolyvalentServer;
 
@@ -26,7 +26,8 @@ import static net.minecraft.server.command.CommandManager.literal;
  */
 public class PolyvalentCommands {
     public static void registerCommands() {
-        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             dispatcher.register(literal("polyvalent").requires(source -> source.hasPermissionLevel(2))
                     .then(literal("generate")
                             .then(literal("resources")

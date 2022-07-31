@@ -70,7 +70,7 @@ public class PolyvalentItemPolyGenerator {
             PolyMc.LOGGER.error("Failed to generate a poly for item " + item.getTranslationKey());
             e.printStackTrace();
             PolyMc.LOGGER.error("Attempting to recover by using a default poly. Please report this");
-            builder.registerItemPoly(item, (input, location) -> new ItemStack(Items.BARRIER));
+            builder.registerItemPoly(item, (input, player, location) -> new ItemStack(Items.BARRIER));
         }
     }
 }

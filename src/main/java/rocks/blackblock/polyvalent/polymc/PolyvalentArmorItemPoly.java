@@ -60,6 +60,7 @@ public class PolyvalentArmorItemPoly extends FancyPantsItemPoly {
         return polyArmorItem;
     }
 
+    /*
     @Override
     public ItemStack getClientItem(ItemStack input, @Nullable ItemLocation location) {
         Item originalItem = input.getItem();
@@ -76,5 +77,7 @@ public class PolyvalentArmorItemPoly extends FancyPantsItemPoly {
 
         return result;
     }
+
+     */
 
 }

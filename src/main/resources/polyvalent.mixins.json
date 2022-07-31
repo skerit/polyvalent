@@ -21,7 +21,8 @@
         "PlayerManagerSyncTagsMixin",
         "PolyMcGeneratorMixin",
         "ServerPlayerEntityMixin",
-        "ServerStartMixin"
+        "ServerStartMixin",
+        "PacketByteBufMixin"
     ],
     "injectors": {
         "defaultRequire": 1
