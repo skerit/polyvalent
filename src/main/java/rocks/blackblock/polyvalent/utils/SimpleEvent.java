@@ -1,11 +1,8 @@
 package rocks.blackblock.polyvalent.utils;
 
-import net.fabricmc.fabric.api.event.EventFactory;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public final class SimpleEvent<T> {
     private List<T> handlers = new ArrayList<>();

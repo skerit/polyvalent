@@ -53,6 +53,7 @@ public class PolyvalentClient implements ClientModInitializer {
     public static HashMap<Integer, PolyvalentBlockInfo> blockInfo = new HashMap<>();
     public static HashMap<Integer, PolyvalentItemInfo> itemInfo = new HashMap<>();
     public static HashMap<Identifier, PolyvalentItemInfo> itemInfoById = new HashMap<>();
+    public static HashMap<Identifier, PolyvalentBlockInfo> defaultBlockInfo = new HashMap<>();
 
     public static boolean connectedToPolyvalentServer = false;
 

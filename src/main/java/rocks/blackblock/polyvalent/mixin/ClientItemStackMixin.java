@@ -36,10 +36,7 @@ public abstract class ClientItemStackMixin {
     @Shadow private @Nullable NbtCompound nbt;
 
     @Inject(method = "getTooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/item/TooltipContext;isAdvanced()Z", ordinal = 2), cancellable = true, locals = LocalCapture.CAPTURE_FAILSOFT)
-    private void addPolyId(@Nullable PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, List list) {
-        //if (PolymerItemUtils.isPolymerServerItem((ItemStack) (Object) this)) {
-            //cir.setReturnValue(list);
-        //}
+    private void addPolyId(@Nullable PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, List<Text> list) {
 
         // No need to do anything if this isn't for an advanced context tooltip view
         if (!context.isAdvanced()) {
@@ -83,7 +80,8 @@ public abstract class ClientItemStackMixin {
 
         list.add(Text.literal(item_id).formatted(Formatting.DARK_GRAY));
 
-        list.add(Text.literal(Registry.ITEM.getId(this.getItem()).toString()).formatted(Formatting.DARK_GRAY));
+        // Add original poly item name
+        //list.add(Text.literal(Registry.ITEM.getId(this.getItem()).toString()).formatted(Formatting.DARK_GRAY));
 
         if (this.hasNbt()) {
             list.add(Text.translatable("item.nbt_tags", this.nbt.getKeys().size()).formatted(Formatting.DARK_GRAY));

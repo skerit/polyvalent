@@ -31,18 +31,21 @@ public class PolyBlockItem extends BlockItem {
         PolyvalentItemInfo info = PolyvalentItemInfo.of(stack);
 
         if (info == null) {
+            Polyvalent.log(" -- No info for stack: " + stack);
             return super.getPlacementState(context);
         }
 
         PolyvalentBlockInfo block_info = info.getBlockInfo();
 
         if (block_info == null) {
+            Polyvalent.log(" -- No block info for stack: " + stack);
             return super.getPlacementState(context);
         }
 
         BlockState state = block_info.getBlockState();
 
         if (state == null) {
+            Polyvalent.log(" -- No block state for stack: " + stack);
             return super.getPlacementState(context);
         }
 

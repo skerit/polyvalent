@@ -4,6 +4,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtInt;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -15,13 +18,19 @@ import rocks.blackblock.polyvalent.Polyvalent;
 import rocks.blackblock.polyvalent.PolyvalentClient;
 import rocks.blackblock.polyvalent.utils.Translations;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * Info on a Polyvalent block
+ * Info on a Polyvalent block(state)
  *
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.1.1
  */
 public class PolyvalentBlockInfo {
+
+    // A map to all the default values
+    private static Map<Identifier, PolyvalentBlockInfo> default_block_states = null;
 
     // The client-side state id
     public final int state_id;
@@ -175,6 +184,7 @@ public class PolyvalentBlockInfo {
      * @since    0.1.1
      */
     public BlockState getBlockState() {
+        Polyvalent.log("Getting blockstate for " + this.identifier + " -- " + this.state_id);
         return Block.STATE_IDS.get(this.state_id);
     }
 
@@ -193,4 +203,43 @@ public class PolyvalentBlockInfo {
 
         return PolyvalentClient.blockInfo.get(state_id);
     }
+
+    /**
+     * Parse NBT blockstate data
+     *
+     * @author   Jelle De Loecker   <jelle@elevenways.be>
+     * @since    0.2.0
+     */
+    public static void parse(NbtCompound block_nbt) {
+
+        Polyvalent.log(" -- Block: " + block_nbt);
+
+        String block_name = block_nbt.getString("id");
+        int state_count = block_nbt.getInt("size");
+        int default_id = block_nbt.getInt("default_id");
+        Identifier block_id = new Identifier(block_name);
+
+        NbtList ids = block_nbt.getList("state_ids", NbtElement.INT_TYPE);
+
+        Polyvalent.log("Default id: " + default_id);
+
+        for (NbtElement entry : ids) {
+            Polyvalent.log("Entry: " + entry);
+
+            if (entry instanceof NbtInt state_id_element) {
+                int state_id = state_id_element.intValue();
+                PolyvalentBlockInfo block = new PolyvalentBlockInfo(state_id, block_name);
+                PolyvalentClient.blockInfo.put(state_id, block);
+
+                PolyvalentClient.actualBlockIdentifiers.put(state_id, block_id);
+                Polyvalent.log(" » " + block_name + ": " + state_id);
+
+                if (state_id == default_id) {
+                    PolyvalentClient.defaultBlockInfo.put(block_id, block);
+                }
+            }
+        }
+
+    }
+
 }

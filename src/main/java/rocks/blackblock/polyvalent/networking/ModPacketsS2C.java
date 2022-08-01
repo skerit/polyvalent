@@ -11,6 +11,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtInt;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
@@ -140,20 +143,11 @@ public class ModPacketsS2C {
         try {
 
             for (int i = 0; i < block_count; i++) {
-                String block_name = blocks.readString(1024);
-                int state_count = blocks.readVarInt();
-
-                Identifier block_id = new Identifier(block_name);
-
-                for (int j = 0; j < state_count; j++) {
-                    int state_id = blocks.readVarInt();
-
-                    PolyvalentBlockInfo block = new PolyvalentBlockInfo(state_id, block_name);
-                    PolyvalentClient.blockInfo.put(state_id, block);
-
-                    PolyvalentClient.actualBlockIdentifiers.put(state_id, block_id);
-                    Polyvalent.log(" » " + block_name + ": " + state_id);
+                NbtCompound block_nbt = blocks.readNbt();
+                if (block_nbt == null) {
+                    continue;
                 }
+                PolyvalentBlockInfo.parse(block_nbt);
             }
         } catch (Exception e) {
             Polyvalent.log(" -- Error reading blocks from map: " + e.getMessage());

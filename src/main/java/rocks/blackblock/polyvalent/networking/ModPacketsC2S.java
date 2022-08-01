@@ -356,15 +356,13 @@ public class ModPacketsC2S {
      */
     private static PacketByteBuf getBlockIdMap(PolyvalentAttachments attachments) {
 
-        PacketByteBuf id_buf = Polyvalent.buf();
-        PacketByteBuf nbt_buf = Polyvalent.buf();
-
         PolyvalentMap map = attachments.getPolyvalentMap();
 
         if (map == null) {
             return null;
         }
 
+        PacketByteBuf nbt_buf = Polyvalent.buf();
         int block_count = 0;
 
         for (Block block : Registry.BLOCK) {
@@ -400,12 +398,7 @@ public class ModPacketsC2S {
 
                 NbtList ids = new NbtList();
 
-                id_buf.writeString(id.toString());
-                id_buf.writeVarInt(state_ids.size());
-
                 for (Integer client_id : state_ids) {
-                    id_buf.writeVarInt(client_id);
-                    //ids.add(new NbtInt(client_id));
                     ids.add(NbtInt.of(client_id));
                 }
 
@@ -419,13 +412,9 @@ public class ModPacketsC2S {
             }
         }
 
-        Polyvalent.log("Sending " + block_count + " block ids");
-        Polyvalent.log(" -- ID buf is " + id_buf.readableBytes() + " bytes long");
-        Polyvalent.log(" -- NBT buf is " + nbt_buf.readableBytes() + " bytes long");
-
         PacketByteBuf buf = Polyvalent.buf();
         buf.writeVarInt(block_count);
-        buf.writeBytes(id_buf);
+        buf.writeBytes(nbt_buf);
 
         return buf;
     }
@@ -505,8 +494,6 @@ public class ModPacketsC2S {
             nbt_count++;
             items.writeNbt(nbt);
         }
-
-        Polyvalent.log("Sending " + nbt_count + " item nbt");
 
         item_buf.writeVarInt(nbt_count);
         item_buf.writeBytes(items);

@@ -2,6 +2,8 @@ package rocks.blackblock.polyvalent.mixin;
 
 import io.github.theepicblock.polymc.api.PolyMap;
 import io.github.theepicblock.polymc.impl.Util;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.item.Item;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -31,6 +33,12 @@ public abstract class PacketByteBufMixin {
             if (map instanceof PolyvalentMap polyvalentMap) {
                 Item item = (Item) value;
                 return polyvalentMap.getClientItemRawId(item, player);
+            }
+        } else if (registry == Block.STATE_IDS) {
+            ServerPlayerEntity player = PacketContext.get().getTarget();
+            PolyMap map = Util.tryGetPolyMap(player);
+            if (map instanceof PolyvalentMap polyvalentMap) {
+                return polyvalentMap.getClientStateRawId((BlockState) value, player);
             }
         }
 

@@ -148,6 +148,11 @@ public class PolyvalentItemInfo {
             return null;
         }
 
+        if (PolyvalentClient.defaultBlockInfo.containsKey(this.block_identifier)) {
+            return PolyvalentClient.defaultBlockInfo.get(this.block_identifier);
+        }
+
+        // If for some reason no default id was found, iterate over all the blocks
         for (PolyvalentBlockInfo info : PolyvalentClient.blockInfo.values()) {
 
             if (info.identifier.equals(this.block_identifier)) {
@@ -271,6 +276,23 @@ public class PolyvalentItemInfo {
         }
 
         return this.title;
+    }
+
+    /**
+     * Return a string representation of this Flow.
+     *
+     * @author   Jelle De Loecker   <jelle@elevenways.be>
+     * @since    0.2.0
+     */
+    @Override
+    public String toString() {
+        String result = "PolyvalentItemInfo{id='" + this.identifier + "',poly='" + this.poly_identifier + "',raw_id='" + this.raw_client_id + "'";
+
+        if (this.is_block_item) {
+            result += ",block='" + this.block_identifier + "'";
+        }
+
+        return result += "}";
     }
 
 }
