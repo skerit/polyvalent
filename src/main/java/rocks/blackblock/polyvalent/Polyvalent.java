@@ -12,16 +12,20 @@ import net.minecraft.block.Material;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import rocks.blackblock.polyvalent.block.*;
 import rocks.blackblock.polyvalent.item.PolyArmorItem;
 import rocks.blackblock.polyvalent.item.PolyBlockItem;
 import rocks.blackblock.polyvalent.item.PolyCompassItem;
 import rocks.blackblock.polyvalent.networking.ModPacketsC2S;
+import rocks.blackblock.polyvalent.utils.Translations;
 
 import java.util.HashMap;
 
@@ -212,7 +216,13 @@ public class Polyvalent implements ModInitializer {
 	 * @param   block        The block instance to register
 	 */
 	public static <T extends Block> T registerBlock(String block_name, T block) {
-		return Registry.register(Registry.BLOCK, new Identifier(MOD_ID, block_name), block);
+		T result = Registry.register(Registry.BLOCK, new Identifier(MOD_ID, block_name), block);
+
+		if (result instanceof PolyvalentBlock polyvalentBlock) {
+			PolyvalentBlock.ALL_POLYVALENT_BLOCKS.add(result);
+		}
+
+		return result;
 	}
 
 	/**
@@ -291,6 +301,61 @@ public class Polyvalent implements ModInitializer {
 	 */
 	public static boolean isNamespaceVanilla(String v) {
 		return v.equals(MC_NAMESPACE);
+	}
+
+	/**
+	 * Is this a vanilla item?
+	 *
+	 * @author   Jelle De Loecker   <jelle@elevenways.be>
+	 * @since    0.2.0
+	 */
+	public static boolean isVanilla(ItemStack stack) {
+
+		Identifier id = null;
+
+		if (Polyvalent.isClient()) {
+			NbtCompound nbt = stack.getNbt();
+
+			Polyvalent.log("Stack: " + stack + " - NBT: " + nbt);
+
+			if (nbt != null && nbt.contains("PolyMcId")) {
+				id = Identifier.tryParse(nbt.getString("PolyMcId"));
+			}
+		}
+
+		if (id == null) {
+			id = Registry.ITEM.getId(stack.getItem());
+		}
+
+		return isVanilla(id);
+	}
+
+	/**
+	 * Get the namespace title of the given identifier
+	 *
+	 * @author   Jelle De Loecker   <jelle@elevenways.be>
+	 * @since    0.1.0
+	 */
+	public static String getNamespaceTitle(Identifier id) {
+
+		if (id == null) {
+			return null;
+		}
+
+		String namespace = id.getNamespace();
+
+		if (isNamespaceVanilla(namespace)) {
+			return "Minecraft";
+		}
+
+		String path = "namespace." + namespace + ".title";
+		String translation = Translations.getIfTranslated(path);
+
+		if (translation != null) {
+			return translation;
+		}
+
+		return namespace;
 	}
 
 	/**

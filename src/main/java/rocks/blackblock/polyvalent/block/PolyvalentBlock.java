@@ -9,7 +9,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import rocks.blackblock.polyvalent.Polyvalent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public interface PolyvalentBlock {
+
+    // A collection of all the registered (PolyvalentBlock) blocks
+    List<Block> ALL_POLYVALENT_BLOCKS = new ArrayList<>();
 
     // The NONCE-property will be the main attribute used to differentiate blocks.
     IntProperty NONCE = IntProperty.of("nonce", 0, 99);

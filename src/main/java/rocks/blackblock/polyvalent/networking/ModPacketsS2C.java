@@ -177,7 +177,7 @@ public class ModPacketsS2C {
 
                 PolyvalentItemInfo item = new PolyvalentItemInfo(nbt);
                 PolyvalentClient.itemInfo.put(item.raw_client_id, item);
-                PolyvalentClient.itemInfoById.put(item.identifier, item);
+                PolyvalentClient.itemInfoById.put(item.getIdentifier(), item);
             }
 
         } catch (Exception e) {

@@ -37,9 +37,7 @@ public abstract class PacketByteBufMixin {
         } else if (registry == Block.STATE_IDS) {
             ServerPlayerEntity player = PacketContext.get().getTarget();
             PolyMap map = Util.tryGetPolyMap(player);
-            if (map instanceof PolyvalentMap polyvalentMap) {
-                return polyvalentMap.getClientStateRawId((BlockState) value, player);
-            }
+            return map.getClientStateRawId((BlockState) value, player);
         }
 
         return registry.getRawId(value);

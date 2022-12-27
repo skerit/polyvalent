@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import rocks.blackblock.polyvalent.Polyvalent;
+import rocks.blackblock.polyvalent.client.PolyvalentItemInfo;
 import rocks.blackblock.polyvalent.item.PolyArmorItem;
 
 import java.util.List;
@@ -78,10 +79,14 @@ public abstract class ClientItemStackMixin {
             item_id = Registry.ITEM.getId(this.getItem()).toString();
         }
 
-        list.add(Text.literal(item_id).formatted(Formatting.DARK_GRAY));
+        PolyvalentItemInfo info = PolyvalentItemInfo.of(stack);
 
-        // Add original poly item name
-        //list.add(Text.literal(Registry.ITEM.getId(this.getItem()).toString()).formatted(Formatting.DARK_GRAY));
+        if (info != null) {
+            list.add(Text.literal(info.getIdentifier().toString()).formatted(Formatting.DARK_GRAY));
+        } else {
+            // Add name of the actual client-side item
+            list.add(Text.literal(Registry.ITEM.getId(this.getItem()).toString()).formatted(Formatting.DARK_GRAY));
+        }
 
         if (this.hasNbt()) {
             list.add(Text.translatable("item.nbt_tags", this.nbt.getKeys().size()).formatted(Formatting.DARK_GRAY));

@@ -27,16 +27,13 @@ import java.util.Map;
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.1.1
  */
-public class PolyvalentBlockInfo {
+public class PolyvalentBlockInfo extends PolyvalentInfo {
 
     // A map to all the default values
     private static Map<Identifier, PolyvalentBlockInfo> default_block_states = null;
 
     // The client-side state id
     public final int state_id;
-
-    // The block's server-side identifier
-    public final Identifier identifier;
 
     // The translated title
     private String title = null;
@@ -55,7 +52,7 @@ public class PolyvalentBlockInfo {
      */
     public PolyvalentBlockInfo(int state_id, String identifier) {
         this.state_id = state_id;
-        this.identifier = Identifier.tryParse(identifier);
+        this.setIdentifier(identifier);
     }
 
     /**

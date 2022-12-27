@@ -3,11 +3,17 @@ package rocks.blackblock.polyvalent.client;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
 import net.minecraft.util.registry.Registry;
 import rocks.blackblock.polyvalent.Polyvalent;
 import rocks.blackblock.polyvalent.PolyvalentClient;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * Info on a Polyvalent item
@@ -15,7 +21,7 @@ import rocks.blackblock.polyvalent.PolyvalentClient;
  * @author   Jelle De Loecker   <jelle@elevenways.be>
  * @since    0.1.1
  */
-public class PolyvalentItemInfo {
+public class PolyvalentItemInfo extends PolyvalentInfo {
 
     // The type of this item
     public final int type_nr;
@@ -23,17 +29,11 @@ public class PolyvalentItemInfo {
     // The id of this item
     public final int raw_client_id;
 
-    // The identifier of the server-side item this is representing
-    public final Identifier identifier;
-
     // The identifier of the item on the client-side
     public final Identifier poly_identifier;
 
     // THe CustomModelData number of this item (if any)
     public final Integer custom_model_data;
-
-    // The namespace of this item
-    private String namespace;
 
     // The title of this item
     private String title = null;
@@ -68,8 +68,7 @@ public class PolyvalentItemInfo {
         this.raw_client_id = data.getInt("id");
 
         // Construct the identifier
-        this.identifier = new Identifier(data.getString("ns"), data.getString("path"));
-        this.namespace = this.identifier.getNamespace();
+        this.setIdentifier(new Identifier(data.getString("ns"), data.getString("path")));
 
         if (data.contains("poly")) {
             this.poly_identifier = Identifier.tryParse(data.getString("poly"));
@@ -124,6 +123,26 @@ public class PolyvalentItemInfo {
         }
 
         return PolyvalentClient.itemInfoById.get(identifier);
+    }
+
+    /**
+     * Get a collection of all custom items
+     *
+     * @author   Jelle De Loecker   <jelle@elevenways.be>
+     * @since    0.2.0
+     */
+    public static List<ItemStack> getStacks() {
+        List<ItemStack> stacks = new java.util.ArrayList<>();
+
+        for (PolyvalentItemInfo info : PolyvalentClient.itemInfoById.values()) {
+            ItemStack entry = info.getItemStack();
+
+            if (entry != null) {
+                stacks.add(entry);
+            }
+        }
+
+        return stacks;
     }
 
     /**
@@ -212,25 +231,13 @@ public class PolyvalentItemInfo {
             original.putByte("Count", (byte) 1);
             nbt.put(Polyvalent.POLY_MC_ORIGINAL, original);
 
+            Text title = Text.literal(this.getTitle()).setStyle(Style.EMPTY.withItalic(false));
+            stack.setCustomName(title);
+
             return stack;
         }
 
         return null;
-    }
-
-    /**
-     * Get the mod name of this item
-     *
-     * @author   Jelle De Loecker   <jelle@elevenways.be>
-     * @since    0.1.1
-     */
-    public String getModName() {
-
-        if (Language.getInstance().hasTranslation(this.namespace)) {
-            return Language.getInstance().get(this.namespace);
-        }
-
-        return this.namespace.substring(0, 1).toUpperCase() + this.namespace.substring(1);
     }
 
     /**

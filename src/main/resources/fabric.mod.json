@@ -26,6 +26,15 @@
     ],
     "server": [
       "rocks.blackblock.polyvalent.PolyvalentServer"
+    ],
+    "jei_mod_plugin": [
+      "rocks.blackblock.polyvalent.compat.JeiCompatibility"
+    ],
+    "rei_client": [
+      "rocks.blackblock.polyvalent.compat.ReiCompatibility"
+    ],
+    "polymc": [
+      "rocks.blackblock.polyvalent.polymc.PolyMcCompatibility"
     ]
   },
   "mixins": [

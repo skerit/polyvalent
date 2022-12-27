@@ -58,7 +58,7 @@ public class WthitCompatibility implements IWailaPlugin {
                 tooltip.setLine(WailaConstants.OBJECT_NAME_TAG, formatter.blockName(info.getTitle()));
 
                 if (config.getBoolean(WailaConstants.CONFIG_SHOW_REGISTRY)) {
-                    tooltip.setLine(WailaConstants.REGISTRY_NAME_TAG, formatter.registryName(info.identifier.toString()));
+                    tooltip.setLine(WailaConstants.REGISTRY_NAME_TAG, formatter.registryName(info.getIdentifier().toString()));
                 }
             }
         }
@@ -98,11 +98,10 @@ public class WthitCompatibility implements IWailaPlugin {
 
                 PolyvalentBlockInfo info = PolyvalentBlockInfo.getBlockInfoAt(accessor.getPosition());
 
-                if (info != null && info.identifier != null) {
+                if (info != null) {
                     IWailaConfig.Formatter formatter = IWailaConfig.get().getFormatter();
-
-                    String mod_name = IModInfo.get(info.identifier).getName();
-                    tooltip.setLine(WailaConstants.MOD_NAME_TAG, formatter.modName(mod_name));
+                    String mod_title = info.getNamespaceTitle();
+                    tooltip.setLine(WailaConstants.MOD_NAME_TAG, formatter.modName(mod_title));
                 }
             }
         }
@@ -127,7 +126,7 @@ public class WthitCompatibility implements IWailaPlugin {
             IWailaConfig.Formatter formatter = IWailaConfig.get().getFormatter();
 
             if (config.getBoolean(WailaConstants.CONFIG_SHOW_REGISTRY)) {
-                tooltip.setLine(WailaConstants.REGISTRY_NAME_TAG, formatter.registryName(info.identifier));
+                tooltip.setLine(WailaConstants.REGISTRY_NAME_TAG, formatter.registryName(info.getIdentifier()));
             }
 
             String title = info.getTitle(stack);
@@ -146,7 +145,7 @@ public class WthitCompatibility implements IWailaPlugin {
                 }
 
                 IWailaConfig.Formatter formatter = IWailaConfig.get().getFormatter();
-                String modname = info.getModName();
+                String modname = info.getNamespaceTitle();
 
                 tooltip.setLine(WailaConstants.MOD_NAME_TAG, formatter.modName(modname));
             }
@@ -175,7 +174,7 @@ public class WthitCompatibility implements IWailaPlugin {
             }
 
             IWailaConfig.Formatter formatter = IWailaConfig.get().getFormatter();
-            String modname = info.getModName();
+            String modname = info.getNamespaceTitle();
 
             return modname;
         }
